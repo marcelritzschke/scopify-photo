@@ -1,0 +1,25 @@
+import { BrowserWindow } from "electron";
+import path from "path";
+
+const createAboutWindow = () => {
+  const aboutWindow = new BrowserWindow({
+    title: "About Vector Scope Live",
+    width: 300,
+    height: 300,
+    backgroundColor: "white",
+    autoHideMenuBar: true,
+  });
+
+  // and load the about.html of the app.
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    aboutWindow.loadURL(
+      path.join(MAIN_WINDOW_VITE_DEV_SERVER_URL, "about.html")
+    );
+  } else {
+    aboutWindow.loadFile(
+      path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/about.html`)
+    );
+  }
+};
+
+export default createAboutWindow;
