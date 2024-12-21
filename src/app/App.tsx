@@ -1,5 +1,11 @@
+import VideoPreview from "./components/VideoPreview";
+
 const App: React.FC = () => {
-  return <></>;
+  return (
+    <>
+      <VideoPreview />
+    </>
+  );
 };
 
 export default App;
