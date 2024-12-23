@@ -10,7 +10,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main_window: resolve(__dirname, "index.html"),
-        modal_window: resolve(__dirname, "about.html"),
+        about_window: resolve(__dirname, "about.html"),
       },
     },
   },

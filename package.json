@@ -5,6 +5,7 @@
   "description": "My Electron application description",
   "main": ".vite/build/main.js",
   "scripts": {
+    "build:nodeaddon": "node-gyp rebuild --target=33.2.1 --arch=x64 --dist-url=https://electronjs.org/headers",
     "build:vite": "vite build",
     "start": "electron-forge start",
     "package": "electron-forge package",

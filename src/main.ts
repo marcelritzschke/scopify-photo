@@ -44,31 +44,6 @@ const triggerImageGrab = (
       console.log(stream);
     })
     .catch((e) => console.log(e));
-
-  // const videoTrack: MediaStreamTrack = stream.getVideoTracks()[0];
-  // const imageCapture = new ImageCapture(videoTrack);
-  // const captureInterval = setInterval(async () => {
-  //   try {
-  //     // Capture a frame (returns a Bitmap)
-  //     const bitmap = await imageCapture.grabFrame();
-  //     console.log("Captured Bitmap:", bitmap);
-
-  //     //   // Optionally draw the bitmap to a canvas
-  //     //   const canvas = document.createElement("canvas");
-  //     //   const ctx = canvas.getContext("2d");
-  //     //   canvas.width = bitmap.width;
-  //     //   canvas.height = bitmap.height;
-  //     //   ctx.drawImage(bitmap, 0, 0);
-
-  //     //   // Do something with the canvas or bitmap here (e.g., save, display)
-  //     //   // Example: Convert to data URL and display in an image element
-  //     //   const imgElement = document.createElement("img");
-  //     //   imgElement.src = canvas.toDataURL();
-  //     //   document.body.appendChild(imgElement); // Append to document (optional)
-  //   } catch (error) {
-  //     console.error("Error capturing bitmap:", error);
-  //   }
-  // }, 1000);
 };
 
 const createWindow = () => {
@@ -83,6 +58,9 @@ const createWindow = () => {
       nodeIntegration: true,
     },
   });
+
+  // console.log(__dirname);
+  // console.log(process.resourcesPath);
 
   session.defaultSession.setDisplayMediaRequestHandler(
     (request, callback) => {
@@ -144,6 +122,21 @@ app.on("ready", () => {
           thumbnail: source.thumbnail?.toDataURL(),
         };
       });
+    },
+  );
+
+  ipcMain.handle(
+    "imageconvert:rgbToHsv",
+    async (event, rgb: Uint8ClampedArray<ArrayBufferLike>) => {
+      let addon = null;
+      if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+        addon = require(
+          path.join(__dirname, "../../build/Release/imageconvert.node"),
+        );
+      } else {
+        addon = require(path.join(process.resourcesPath, "imageconvert.node"));
+      }
+      return new Float32Array(addon.rgbToHsv(rgb.buffer));
     },
   );
 });

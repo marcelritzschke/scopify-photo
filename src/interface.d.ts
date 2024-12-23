@@ -10,6 +10,9 @@ export interface IElectronAPI {
   getDesktopSources: (
     opts: Electron.SourcesOptions,
   ) => Promise<DesktopSource[]>;
+  convertrRgbToHsv: (
+    rgb: Uint8ClampedArray<ArrayBufferLike>,
+  ) => Promise<Float32Array>;
   setCaptureId: (id: string) => Promise<void>;
 }
 
