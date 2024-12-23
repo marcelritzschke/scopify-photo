@@ -11,4 +11,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
   triggerImageGrab: (stream: MediaStream) =>
     ipcRenderer.send("trigger-image-grab", stream),
   setCaptureId: (id: string) => ipcRenderer.send("set-captureid", id),
+  minimizeWindow: () => ipcRenderer.send("title-bar:minimize-window"),
+  maximizeWindow: () => ipcRenderer.send("title-bar:maximize-window"),
+  createAboutWindow: () => ipcRenderer.send("title-bar:create-about-window"),
+  reloadMainWindow: () => ipcRenderer.send("title-bar:reload"),
+  forceReloadMainWindow: () => ipcRenderer.send("title-bar:force-reload"),
+  toggleDevToolsMainWindow: () =>
+    ipcRenderer.send("title-bar:toggle-dev-tools"),
 });

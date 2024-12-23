@@ -1,10 +1,9 @@
 import React, { useEffect, useRef } from "react";
 
-const VideoPlayer: React.FC<{ mediaStream: MediaStream }> = ({
-  mediaStream,
-}) => {
-  const videoRef = useRef(null);
-
+const VideoPlayer: React.FC<{
+  mediaStream: MediaStream;
+  videoRef: React.RefObject<HTMLVideoElement>;
+}> = ({ mediaStream, videoRef }) => {
   useEffect(() => {
     if (videoRef.current && mediaStream) {
       videoRef.current.srcObject = mediaStream;

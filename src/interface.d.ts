@@ -1,11 +1,3 @@
-export interface DesktopSource {
-  appIcon: string;
-  display_id: string;
-  id: string;
-  name: string;
-  thumbnail: string;
-}
-
 export interface IElectronAPI {
   getDesktopSources: (
     opts: Electron.SourcesOptions,
@@ -14,6 +6,12 @@ export interface IElectronAPI {
     rgb: Uint8ClampedArray<ArrayBufferLike>,
   ) => Promise<Float32Array>;
   setCaptureId: (id: string) => Promise<void>;
+  minimizeWindow: () => Promise<void>;
+  maximizeWindow: () => Promise<void>;
+  createAboutWindow: () => Promise<void>;
+  reloadMainWindow: () => Promise<void>;
+  forceReloadMainWindow: () => Promise<void>;
+  toggleDevToolsMainWindow: () => Promise<void>;
 }
 
 declare global {

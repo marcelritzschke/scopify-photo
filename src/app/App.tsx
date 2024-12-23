@@ -1,11 +1,21 @@
-import VideoPreview from "./components/VideoPreview";
+import { useState } from "react";
+import Navbar from "./components/navigation/Navbar";
+import VideoPreview from "./components/Video/VideoPreview";
 
-const App: React.FC = () => {
+export default function App() {
+  const [isSelectInputOpen, setIsSelectInputOpen] = useState<boolean>(false);
+
   return (
     <>
-      <VideoPreview />
+      <div>
+        <Navbar setIsSelectInputOpen={setIsSelectInputOpen} />
+      </div>
+      <div className="mt-2">
+        <VideoPreview
+          isSelectInputOpen={isSelectInputOpen}
+          setIsSelectInputOpen={setIsSelectInputOpen}
+        />
+      </div>
     </>
   );
-};
-
-export default App;
+}

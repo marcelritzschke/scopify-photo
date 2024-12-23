@@ -2,8 +2,8 @@ import {
   app,
   BrowserWindow,
   desktopCapturer,
+  globalShortcut,
   ipcMain,
-  Menu,
   session,
 } from "electron";
 import path from "path";
@@ -50,7 +50,9 @@ const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     title: "Vector Scope Live",
+    frame: false,
     width: isDev ? 1000 : 800,
+    minWidth: 400,
     height: 600,
     backgroundColor: "black",
     webPreferences: {
@@ -102,11 +104,24 @@ const createWindow = () => {
 app.on("ready", () => {
   ipcMain.on("set-captureid", handleSetCaptureId);
   ipcMain.on("trigger-image-grab", triggerImageGrab);
-
-  createWindow();
-
-  const mainMenu = Menu.buildFromTemplate(menu);
-  Menu.setApplicationMenu(mainMenu);
+  ipcMain.on("title-bar:minimize-window", () => {
+    BrowserWindow.getFocusedWindow().minimize();
+  });
+  ipcMain.on("title-bar:maximize-window", () => {
+    BrowserWindow.getFocusedWindow().maximize();
+  });
+  ipcMain.on("title-bar:create-about-window", () => {
+    createAboutWindow();
+  });
+  ipcMain.on("title-bar:reload", () => {
+    mainWindow.webContents.reloadIgnoringCache();
+  });
+  ipcMain.on("title-bar:force-reload", () => {
+    mainWindow.webContents.reload();
+  });
+  ipcMain.on("title-bar:toggle-dev-tools", () => {
+    mainWindow.webContents.toggleDevTools();
+  });
 
   ipcMain.handle(
     "desktopcapturer:getSources",
@@ -139,6 +154,23 @@ app.on("ready", () => {
       return new Float32Array(addon.rgbToHsv(rgb.buffer));
     },
   );
+
+  globalShortcut.register("CommandOrControl+W", () => {
+    BrowserWindow.getFocusedWindow().close();
+  });
+  if (isDev) {
+    globalShortcut.register("CommandOrControl+R", () => {
+      BrowserWindow.getFocusedWindow().webContents.reload();
+    });
+    globalShortcut.register("CommandOrControl+Shift+R", () => {
+      BrowserWindow.getFocusedWindow().webContents.reloadIgnoringCache();
+    });
+    globalShortcut.register("CommandOrControl+Shift+I", () => {
+      BrowserWindow.getFocusedWindow().webContents.toggleDevTools();
+    });
+  }
+
+  createWindow();
 });
 
 app.on("quit", () => {
@@ -164,40 +196,3 @@ app.on("activate", () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
-const menu = [
-  ...(isMac
-    ? [
-        {
-          label: app.name,
-          submenu: [{ label: "About", click: createAboutWindow }],
-        },
-      ]
-    : []),
-  { role: "fileMenu" },
-  ...(!isMac
-    ? [
-        {
-          label: "Help",
-          submenu: [
-            {
-              label: "About",
-              click: createAboutWindow,
-            },
-          ],
-        },
-      ]
-    : []),
-  ...(isDev
-    ? [
-        {
-          label: "Developer",
-          submenu: [
-            { role: "reload" },
-            { role: "forcereload" },
-            { type: "separator" },
-            { role: "toggledevtools" },
-          ],
-        },
-      ]
-    : []),
-] as Electron.MenuItem[];
