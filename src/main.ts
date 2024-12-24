@@ -19,9 +19,12 @@ if (started) {
 }
 
 let mainWindow: BrowserWindow;
-let captureId: string;
+let captureId: string | null;
 
-const handleSetCaptureId = (event: Electron.IpcMainInvokeEvent, id: string) => {
+const handleSetCaptureId = (
+  event: Electron.IpcMainInvokeEvent,
+  id: string | null,
+) => {
   captureId = id;
 };
 
@@ -67,7 +70,7 @@ const createWindow = () => {
   session.defaultSession.setDisplayMediaRequestHandler(
     (request, callback) => {
       desktopCapturer.getSources({ types: ["window"] }).then((sources) => {
-        let chosenSource = sources[0];
+        let chosenSource = undefined;
         sources.forEach((source) => {
           if (source.id === captureId) {
             chosenSource = source;

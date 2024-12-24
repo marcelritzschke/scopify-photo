@@ -4,13 +4,15 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
 import { faWindowMinimize } from "@fortawesome/free-solid-svg-icons/faWindowMinimize";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons/faWindowMaximize";
 import MenuItemComponent from "./MenuItemComponent";
+import { useContext } from "react";
+import { AppContext } from "@/app/AppContext";
 
 interface Props {
   setIsSelectInputOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function ({ setIsSelectInputOpen }: Props) {
-  const isDev = process.env.NODE_ENV !== "production" ? true : false;
+  const { isDev } = useContext(AppContext);
 
   const closeWindow = () => {
     window.close();

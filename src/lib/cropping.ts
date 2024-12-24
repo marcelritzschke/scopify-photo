@@ -1,4 +1,4 @@
-import { BoundingBox } from "@/types/types";
+import { BoundingBox, DragOffset } from "@/types/types";
 
 const handleSize = 10;
 const cropAreaMinSize = 50;
@@ -154,6 +154,7 @@ export const setNewBoundingBox = (
   mouseY: number,
   canvasWidth: number,
   canvasHeight: number,
+  dragOffset: DragOffset,
 ): BoundingBox => {
   switch (dragging) {
     case "top-left":
@@ -189,6 +190,10 @@ export const setNewBoundingBox = (
       break;
     case "right":
       newBox.width = mouseX - prev.startX;
+      break;
+    case "move":
+      newBox.startX = mouseX - dragOffset.offsetX;
+      newBox.startY = mouseY - dragOffset.offsetY;
       break;
     default:
       break;
