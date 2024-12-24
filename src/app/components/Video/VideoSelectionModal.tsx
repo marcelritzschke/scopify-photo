@@ -5,7 +5,7 @@ import {
   DialogPanel,
   DialogTitle,
 } from "@headlessui/react";
-import { DesktopSource } from "types/types";
+import { DesktopSource } from "@/types/types";
 import VideoSelectionSource from "./VideoSelectionSource";
 import { useState } from "react";
 import VideoSelectionCrop from "./VideoSelectionCrop";

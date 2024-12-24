@@ -1,7 +1,7 @@
 {
   "name": "vector-scope-live",
   "productName": "vector-scope-live",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "My Electron application description",
   "main": ".vite/build/main.js",
   "scripts": {
@@ -32,6 +32,7 @@
     "autoprefixer": "^10.4.20",
     "electron": "^33.2.1",
     "eslint": "^8.57.1",
+    "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.31.0",
     "node-gyp": "^11.0.0",
     "postcss": "^8.4.49",

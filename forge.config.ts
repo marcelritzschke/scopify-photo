@@ -6,11 +6,29 @@ import { MakerRpm } from "@electron-forge/maker-rpm";
 import { VitePlugin } from "@electron-forge/plugin-vite";
 import { FusesPlugin } from "@electron-forge/plugin-fuses";
 import { FuseV1Options, FuseVersion } from "@electron/fuses";
+import { readdirSync } from "fs";
+import { join } from "path";
+
+const releaseFolder = "./build/Release";
+
+const findOpenCvDll = () => {
+  const regex = /^opencv_world\d+\.dll$/;
+  const files = readdirSync(releaseFolder);
+  const matchingFiles = files
+    .filter((file) => regex.test(file))
+    .map((match) => {
+      return join(releaseFolder, match);
+    });
+  return matchingFiles;
+};
 
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
-    extraResource: ["./build/Release/imageconvert.node"],
+    extraResource: [
+      join(releaseFolder, "imageconvert.node"),
+      ...findOpenCvDll(),
+    ],
   },
   rebuildConfig: {},
   makers: [

@@ -5,8 +5,8 @@ import {
   drawBoundingBox,
   getDraggingLocation,
   setNewBoundingBox,
-} from "./../../../lib/cropping"; //TODO add global entry point for lib folder
-import { BoundingBox } from "types/types";
+} from "@/lib/cropping";
+import { BoundingBox } from "@/types/types";
 
 interface VideoSelectionCropParams {
   stream: MediaStream;
@@ -25,7 +25,7 @@ const VideoSelectionCrop: React.FC<VideoSelectionCropParams> = ({ stream }) => {
   });
 
   useEffect(() => {
-    const video = videoRef.current!;
+    const video = videoRef.current ?? null;
     const updateCanvasSizeEvent = () => {
       updateCanvasSize(video.offsetWidth, video.offsetHeight);
     };
@@ -53,8 +53,8 @@ const VideoSelectionCrop: React.FC<VideoSelectionCropParams> = ({ stream }) => {
 
   useEffect(() => {
     if (boundingBox) {
-      const canvas = canvasRef.current!;
-      const ctx = canvas.getContext("2d")!;
+      const canvas = canvasRef.current ?? null;
+      const ctx = canvas.getContext("2d") ?? null;
       drawBoundingBox(ctx, canvas.width, canvas.height, boundingBox);
     }
   }, [boundingBox]);
@@ -78,7 +78,7 @@ const VideoSelectionCrop: React.FC<VideoSelectionCropParams> = ({ stream }) => {
   }, [videoRef]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    const canvas = canvasRef.current!;
+    const canvas = canvasRef.current ?? null;
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
@@ -98,7 +98,7 @@ const VideoSelectionCrop: React.FC<VideoSelectionCropParams> = ({ stream }) => {
 
     if (dragging === "full") console.log("full");
 
-    const canvas = canvasRef.current!;
+    const canvas = canvasRef.current ?? null;
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;

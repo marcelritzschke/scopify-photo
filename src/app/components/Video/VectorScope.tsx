@@ -1,11 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import * as d3 from "d3";
-
-interface HsvData {
-  h: number; // Hue
-  s: number; // Saturation
-  v: number; // Value
-}
 
 const VectorScope: React.FC<{ bitmap: ImageBitmap | null }> = ({ bitmap }) => {
   const [hsvData, setHsvData] = useState<Float32Array>();
@@ -108,7 +101,7 @@ const VectorScope: React.FC<{ bitmap: ImageBitmap | null }> = ({ bitmap }) => {
     for (let idx = 0; idx < hsvData.length; idx += 3) {
       const h = hsvData[idx];
       const s = hsvData[idx + 1];
-      const v = hsvData[idx + 2];
+      // const v = hsvData[idx + 2];
 
       const angle = (h / 360) * (2 * Math.PI);
       const radiusScale = s * radius;

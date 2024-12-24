@@ -1,4 +1,4 @@
-import { DesktopSource } from "types/types";
+import { DesktopSource } from "@/types/types";
 
 interface VideoSelectionSourceParams {
   onSelected: (id: string) => void;

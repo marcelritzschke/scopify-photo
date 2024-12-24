@@ -1,5 +1,4 @@
-import { memoize } from "lodash";
-import { BoundingBox } from "types/types";
+import { BoundingBox } from "@/types/types";
 
 const handleSize = 10;
 const cropAreaMinSize = 50;

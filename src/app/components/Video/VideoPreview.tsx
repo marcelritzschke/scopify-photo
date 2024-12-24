@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import VideoSelectionModal from "./VideoSelectionModal";
-import { DesktopSource } from "types/types";
-import VideoPlayer from "./VideoPlay";
-import VectorScope from "./VectorScope";
+import { DesktopSource } from "@/types/types";
 
 interface Props {
   isSelectInputOpen: boolean;
