@@ -126,6 +126,10 @@ app.on("ready", () => {
     mainWindow.webContents.toggleDevTools();
   });
 
+  ipcMain.handle("video:getCaptureId", () => {
+    return captureId;
+  });
+
   ipcMain.handle(
     "desktopcapturer:getSources",
     async (event, opts: Electron.SourcesOptions) => {

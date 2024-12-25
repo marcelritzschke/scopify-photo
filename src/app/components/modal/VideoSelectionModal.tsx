@@ -4,79 +4,36 @@ import {
   DialogPanel,
   DialogTitle,
 } from "@headlessui/react";
-import { DesktopSource } from "@/types/types";
 import VideoSelectionSource from "@/app/components/modal/VideoSelectionSource";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import VideoSelectionCrop from "@/app/components/modal/VideoSelectionCrop";
 import NextButton from "@/app/components/modal/NextButton";
 import { VideoSelectionModalState } from "@/types/enums";
 import BackButton from "@/app/components/modal/BackButton";
+import { AppContext } from "@/app/AppContext";
 
-interface VideoSelectionModalParams {
-  onFinished: () => void;
-  setIsOpen: (value: boolean) => void;
-  setCaptureId: (value: string) => void;
-  sources: DesktopSource[];
+interface VideoSelectionModalProps {
   stream: MediaStream | null;
 }
 
-const VideoSelectionModal: React.FC<VideoSelectionModalParams> = ({
-  onFinished,
-  setIsOpen,
-  setCaptureId,
-  sources,
+const VideoSelectionModal: React.FC<VideoSelectionModalProps> = ({
   stream,
 }) => {
-  const [modelState, setModalState] = useState<VideoSelectionModalState>(
-    VideoSelectionModalState.Selecting,
-  );
-
-  const transitionState = (newState: VideoSelectionModalState) => {
-    switch (modelState) {
-      case VideoSelectionModalState.Selecting:
-        if (newState === VideoSelectionModalState.Cancelled) {
-          close();
-          break;
-        }
-        if (newState === VideoSelectionModalState.Cropping) {
-          setModalState(newState);
-          break;
-        }
-        break;
-      case VideoSelectionModalState.Cropping:
-        if (newState === VideoSelectionModalState.Selecting) {
-          setModalState(VideoSelectionModalState.Selecting);
-          setCaptureId("");
-          break;
-        }
-        if (newState === VideoSelectionModalState.Finished) {
-          setModalState(VideoSelectionModalState.Selecting); //TODO: Prepare for next call can be done more graceful
-          onFinished();
-          close();
-          break;
-        }
-        break;
-
-      default:
-        break;
-    }
-  };
+  const { appState, requestAppStateTransition } = useContext(AppContext);
 
   const close = () => {
-    setIsOpen(false);
+    requestAppStateTransition(VideoSelectionModalState.Closed);
   };
 
-  const onSelected = (id: string) => {
-    setCaptureId(id);
-    transitionState(VideoSelectionModalState.Cropping);
+  const onSelected = async (id: string) => {
+    await window.electronAPI.setCaptureId(id);
+    requestAppStateTransition(VideoSelectionModalState.Cropping);
   };
 
   const MainView: React.FC = () => {
-    switch (modelState) {
+    switch (appState) {
       case VideoSelectionModalState.Selecting:
-        return (
-          <VideoSelectionSource onSelected={onSelected} sources={sources} />
-        );
+        return <VideoSelectionSource onSelected={onSelected} />;
       case VideoSelectionModalState.Cropping:
         return <VideoSelectionCrop stream={stream} />;
       default:
@@ -113,8 +70,14 @@ const VideoSelectionModal: React.FC<VideoSelectionModalParams> = ({
             </p>
             <MainView />
             <div className="mt-4 flex items-center justify-end border-t border-gray-700">
-              <BackButton state={modelState} transition={transitionState} />
-              <NextButton state={modelState} transition={transitionState} />
+              <BackButton
+                state={appState}
+                transition={requestAppStateTransition}
+              />
+              <NextButton
+                state={appState}
+                transition={requestAppStateTransition}
+              />
             </div>
           </DialogPanel>
         </div>

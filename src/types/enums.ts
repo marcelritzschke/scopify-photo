@@ -1,6 +1,5 @@
 export enum VideoSelectionModalState {
-  Cancelled = 1,
+  Closed = 1,
   Selecting,
   Cropping,
-  Finished,
 }

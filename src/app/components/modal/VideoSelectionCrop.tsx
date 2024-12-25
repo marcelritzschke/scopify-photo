@@ -10,12 +10,13 @@ import { BoundingBox, DragOffset } from "@/types/types";
 import { AppContext } from "@/app/AppContext";
 import Spinner from "@/app/components/Spinner";
 
-interface VideoSelectionCropParams {
+interface VideoSelectionCropProps {
   stream: MediaStream | null;
 }
 
-const VideoSelectionCrop: React.FC<VideoSelectionCropParams> = ({ stream }) => {
+const VideoSelectionCrop: React.FC<VideoSelectionCropProps> = ({ stream }) => {
   const { isDev } = useContext(AppContext);
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [dragging, setDragging] = useState<string | null>(null);
@@ -36,7 +37,6 @@ const VideoSelectionCrop: React.FC<VideoSelectionCropParams> = ({ stream }) => {
       const updateCanvasSizeEvent = () => {
         updateCanvasSize(video.offsetWidth, video.offsetHeight);
       };
-
       // Set event listeners
       window.addEventListener("resize", updateCanvasSizeEvent);
 
@@ -68,6 +68,7 @@ const VideoSelectionCrop: React.FC<VideoSelectionCropParams> = ({ stream }) => {
   }, [boundingBox]);
 
   useEffect(() => {
+    console.log("videoref udated");
     if (videoRef.current) {
       // Set canvas size once media stream dimension are received
       videoRef.current.onloadedmetadata = () => {

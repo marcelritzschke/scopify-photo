@@ -4,6 +4,7 @@
 import { contextBridge, ipcRenderer } from "electron";
 
 contextBridge.exposeInMainWorld("electronAPI", {
+  getCaptureId: () => ipcRenderer.invoke("video:getCaptureId"),
   getDesktopSources: (opts: Electron.SourcesOptions) =>
     ipcRenderer.invoke("desktopcapturer:getSources", opts),
   convertrRgbToHsv: (rgb: Uint8ClampedArray<ArrayBufferLike>) =>

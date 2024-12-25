@@ -6,13 +6,14 @@ import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons/faWindowMaxi
 import MenuItemComponent from "./MenuItemComponent";
 import { useContext } from "react";
 import { AppContext } from "@/app/AppContext";
+import { VideoSelectionModalState } from "@/types/enums";
 
-interface Props {
-  setIsSelectInputOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-export default function ({ setIsSelectInputOpen }: Props) {
-  const { isDev } = useContext(AppContext);
+export default function () {
+  const {
+    isDev,
+    appState,
+    requestAppStateTransition: requestAppStateTransition,
+  } = useContext(AppContext);
 
   const closeWindow = () => {
     window.close();
@@ -24,6 +25,10 @@ export default function ({ setIsSelectInputOpen }: Props) {
 
   const maximizeWindow = () => {
     window.electronAPI.maximizeWindow();
+  };
+
+  const openVideoSelection = () => {
+    requestAppStateTransition(VideoSelectionModalState.Selecting);
   };
 
   return (
@@ -41,7 +46,7 @@ export default function ({ setIsSelectInputOpen }: Props) {
             >
               <MenuItemComponent
                 text="Select Input"
-                callback={() => setIsSelectInputOpen(true)}
+                callback={openVideoSelection}
               />
               <MenuItemComponent
                 text="Exit"

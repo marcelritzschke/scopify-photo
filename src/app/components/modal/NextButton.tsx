@@ -22,7 +22,7 @@ const NextButton: React.FC<{
         <Button
           className="ml-2 mt-2 inline-flex cursor-pointer items-center gap-2 rounded-md bg-gray-700 px-3 py-1.5 text-white focus:outline-none"
           onClick={() => {
-            transition(VideoSelectionModalState.Finished);
+            transition(VideoSelectionModalState.Closed);
           }}
         >
           Finish

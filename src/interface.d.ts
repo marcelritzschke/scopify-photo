@@ -1,4 +1,5 @@
 export interface IElectronAPI {
+  getCaptureId: () => Promise<string | null>;
   getDesktopSources: (
     opts: Electron.SourcesOptions,
   ) => Promise<DesktopSource[]>;

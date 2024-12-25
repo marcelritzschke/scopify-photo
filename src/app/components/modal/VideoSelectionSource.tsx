@@ -1,15 +1,26 @@
 import { DesktopSource } from "@/types/types";
 import Spinner from "@/app/components/Spinner";
+import { useEffect, useState } from "react";
+import { fetchDesktopSources } from "@/lib/utils";
 
 interface VideoSelectionSourceParams {
   onSelected: (id: string) => void;
-  sources: DesktopSource[];
 }
 
 const VideoSelectionSource: React.FC<VideoSelectionSourceParams> = ({
   onSelected,
-  sources,
 }) => {
+  const [sources, setSources] = useState<DesktopSource[]>([]);
+
+  useEffect(() => {
+    const fetchDesktopSourcesWrapper = async () => {
+      return await fetchDesktopSources();
+    };
+    fetchDesktopSourcesWrapper().then((result) => {
+      setSources(result);
+    });
+  }, []);
+
   if (sources.length) {
     return (
       <div className="mt-4 grid h-96 grid-cols-2 gap-4 overflow-auto [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500 [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 [&::-webkit-scrollbar]:w-2">

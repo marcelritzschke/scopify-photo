@@ -5,8 +5,12 @@ const VideoPlayer: React.FC<{
   videoRef: React.RefObject<HTMLVideoElement>;
 }> = ({ mediaStream, videoRef }) => {
   useEffect(() => {
-    if (videoRef.current && mediaStream) {
-      videoRef.current.srcObject = mediaStream;
+    if (videoRef.current) {
+      if (mediaStream) {
+        videoRef.current.srcObject = mediaStream;
+      } else {
+        videoRef.current.srcObject = null;
+      }
     }
 
     // Clean up when the component unmounts
