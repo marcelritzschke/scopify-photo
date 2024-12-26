@@ -28,25 +28,8 @@ const handleSetCaptureId = (
   captureId = id;
 };
 
-const triggerImageGrab = (
-  event: Electron.IpcMainInvokeEvent,
-  stream: MediaStream,
-) => {
-  console.log("here in main", event, stream);
-
-  navigator.mediaDevices
-    .getDisplayMedia({
-      audio: false,
-      video: {
-        width: 320,
-        height: 240,
-        frameRate: 30,
-      },
-    })
-    .then((stream) => {
-      console.log(stream);
-    })
-    .catch((e) => console.log(e));
+const triggerImageGrab = async (event: Electron.IpcMainInvokeEvent) => {
+  console.log("here in main", event);
 };
 
 const createWindow = () => {
@@ -69,15 +52,17 @@ const createWindow = () => {
 
   session.defaultSession.setDisplayMediaRequestHandler(
     (request, callback) => {
-      desktopCapturer.getSources({ types: ["window"] }).then((sources) => {
-        let chosenSource = undefined;
-        sources.forEach((source) => {
-          if (source.id === captureId) {
-            chosenSource = source;
-          }
+      desktopCapturer
+        .getSources({ types: ["screen", "window"] })
+        .then((sources) => {
+          let chosenSource = undefined;
+          sources.forEach((source) => {
+            if (source.id === captureId) {
+              chosenSource = source;
+            }
+          });
+          callback({ video: chosenSource, audio: "loopback" });
         });
-        callback({ video: chosenSource, audio: "loopback" });
-      });
       // If true, use the system picker if available.
       // Note: this is currently experimental. If the system picker
       // is available, it will be used and the media request handler

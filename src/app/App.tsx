@@ -12,22 +12,48 @@ export default function App() {
     VideoSelectionModalState.Closed,
   );
   const [stream, setStream] = useState<MediaStream>(null);
+  const [imageCapture, setImageCapture] = useState<ImageCapture>(null);
+  const [bitmap, setBitmap] = useState<ImageBitmap>();
+  const [interval, setCaptureInterval] = useState<NodeJS.Timeout>();
 
   const requestAppStateTransition = async (
     newState: VideoSelectionModalState,
   ) => {
-    console.log(`Switching App State from ${appState} to ${newState}`);
+    isDev && console.log(`Switching App State from ${appState} to ${newState}`);
 
     switch (newState) {
       case VideoSelectionModalState.Selecting:
         setStream(null);
+        setBitmap(null);
+        clearInterval(interval);
         break;
       case VideoSelectionModalState.Cropping:
-        setStream(await getMediaStream());
+        const streamLocal = await getMediaStream();
+        setStream(streamLocal);
+        setImageCapture(new ImageCapture(streamLocal.getVideoTracks()[0]));
+        break;
+      case VideoSelectionModalState.Closed:
+        setImageCaptureInterval();
         break;
     }
 
     setAppState(newState);
+  };
+
+  const setImageCaptureInterval = () => {
+    if (imageCapture) {
+      const captureInterval = setInterval(async () => {
+        try {
+          const bitmap: ImageBitmap = await imageCapture.grabFrame();
+          console.log("Captured Bitmap:", bitmap);
+
+          setBitmap(bitmap);
+        } catch (error) {
+          console.error("Error capturing bitmap:", error);
+        }
+      }, 1000);
+      setCaptureInterval(captureInterval);
+    }
   };
 
   return (
@@ -36,12 +62,15 @@ export default function App() {
         isDev: isDev,
         appState: appState,
         requestAppStateTransition: requestAppStateTransition,
+        bitmap: bitmap,
       }}
     >
       <Navbar />
-      <div className="mt-2">
-        <VideoPreview />
-      </div>
+      {appState === VideoSelectionModalState.Closed && (
+        <div className="mt-2">
+          <VideoPreview stream={stream} />
+        </div>
+      )}
 
       {appState !== VideoSelectionModalState.Closed && (
         <VideoSelectionModal stream={stream} />

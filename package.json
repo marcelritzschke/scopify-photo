@@ -27,6 +27,7 @@
     "@types/lodash": "^4.17.13",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
+    "@types/w3c-image-capture": "^1.0.10",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "autoprefixer": "^10.4.20",

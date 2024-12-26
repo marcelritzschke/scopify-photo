@@ -7,6 +7,7 @@ export interface IElectronAPI {
     rgb: Uint8ClampedArray<ArrayBufferLike>,
   ) => Promise<Float32Array>;
   setCaptureId: (id: string) => Promise<void>;
+  triggerImageGrab: () => Promise<void>;
   minimizeWindow: () => Promise<void>;
   maximizeWindow: () => Promise<void>;
   createAboutWindow: () => Promise<void>;

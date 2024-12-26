@@ -1,6 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { AppContext } from "@/app/AppContext";
+import { useContext, useEffect, useRef, useState } from "react";
 
-const VectorScope: React.FC<{ bitmap: ImageBitmap | null }> = ({ bitmap }) => {
+// const VectorScope: React.FC<{ bitmap: ImageBitmap | null }> = ({ bitmap }) => {
+const VectorScope: React.FC = () => {
+  const { bitmap } = useContext(AppContext);
   const [hsvData, setHsvData] = useState<Float32Array>();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 

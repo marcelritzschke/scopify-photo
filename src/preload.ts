@@ -9,8 +9,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.invoke("desktopcapturer:getSources", opts),
   convertrRgbToHsv: (rgb: Uint8ClampedArray<ArrayBufferLike>) =>
     ipcRenderer.invoke("imageconvert:rgbToHsv", rgb),
-  triggerImageGrab: (stream: MediaStream) =>
-    ipcRenderer.send("trigger-image-grab", stream),
+  triggerImageGrab: () => ipcRenderer.send("trigger-image-grab"),
   setCaptureId: (id: string) => ipcRenderer.send("set-captureid", id),
   minimizeWindow: () => ipcRenderer.send("title-bar:minimize-window"),
   maximizeWindow: () => ipcRenderer.send("title-bar:maximize-window"),
