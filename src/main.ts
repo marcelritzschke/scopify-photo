@@ -143,7 +143,7 @@ app.on("ready", () => {
       } else {
         addon = require(path.join(process.resourcesPath, "imageconvert.node"));
       }
-      return new Float32Array(addon.rgbToHsv(rgb.buffer));
+      return new Uint8ClampedArray(addon.rgbToHsv(rgb.buffer));
     },
   );
 

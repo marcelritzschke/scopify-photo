@@ -2,6 +2,7 @@
   "conditions": [
     ['OS=="win"', {
       "variables": {
+          "Cpp_Dir%": "./src/lib/cpp",
           "OpenCV_Include_Dirs%": "C:/tools/opencv/build/include",
           "OpenCV_Version%": "4100",
           "OpenCV_Lib_Dirs%": "C:/tools/opencv/build/x64/vc16",
@@ -25,7 +26,7 @@
           }]
         }]
       ],
-      "sources": [ "src/lib/imageconvertcpp/imageconvert.cpp" ],
+      "sources": [ "<(Cpp_Dir)/imageconvert.cpp", "<(Cpp_Dir)/transformation.cpp" ],
       "include_dirs": [
         "<(OpenCV_Include_Dirs)"
       ],

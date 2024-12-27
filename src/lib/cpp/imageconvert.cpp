@@ -3,7 +3,9 @@
 #include <iostream>
 #include <limits>
 #include <chrono>
+#include <mutex>
 #include <opencv2/opencv.hpp>
+#include "transformation.hpp"
 
 namespace imageconvert
 {
@@ -50,31 +52,16 @@ namespace imageconvert
     int num_pixels = length / 4; // Number of RGBA pixels
     auto start = std::chrono::high_resolution_clock::now();
 
-    // Create an OpenCV Mat from the RGBA data
-    cv::Mat rgba_image(num_pixels, 1, CV_8UC4, data);
-
-    // Convert RGBA to RGB by dropping the alpha channel
-    cv::Mat rgb_image;
-    cv::cvtColor(rgba_image, rgb_image, cv::COLOR_RGBA2RGB);
-
-    cv::Mat floatRgbImage;
-    rgb_image.convertTo(floatRgbImage, CV_32F, 1.0 / 255.0); // Normalize to [0, 1]
-
-    // Convert RGB to HSV
-    cv::Mat hsv_image;
-    cv::cvtColor(floatRgbImage, hsv_image, cv::COLOR_RGB2HSV_FULL);
-
-    // Flatten HSV data into a 1D array
-    std::vector<float> hsv_flat(hsv_image.total() * hsv_image.elemSize());
-    memcpy(hsv_flat.data(), hsv_image.data, hsv_flat.size());
-
-    // Create a new ArrayBuffer to return the HSV data
-    auto hsv_buffer = ArrayBuffer::New(isolate, hsv_flat.size());
-    memcpy(hsv_buffer->Data(), hsv_flat.data(), hsv_flat.size());
+    std::vector<char> hsv_flat;
+    transformation::convertImage(num_pixels, data, hsv_flat, 4, 400, 400);
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration = end - start;
     std::cout << "Time taken: " << duration.count() << " seconds\n";
+
+    // Create a new ArrayBuffer to return the HSV data
+    auto hsv_buffer = ArrayBuffer::New(isolate, hsv_flat.size());
+    memcpy(hsv_buffer->Data(), hsv_flat.data(), hsv_flat.size());
 
     args.GetReturnValue().Set(hsv_buffer);
   }

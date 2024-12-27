@@ -5,7 +5,7 @@ export interface IElectronAPI {
   ) => Promise<DesktopSource[]>;
   convertrRgbToHsv: (
     rgb: Uint8ClampedArray<ArrayBufferLike>,
-  ) => Promise<Float32Array>;
+  ) => Promise<Uint8ClampedArray>;
   setCaptureId: (id: string) => Promise<void>;
   triggerImageGrab: () => Promise<void>;
   minimizeWindow: () => Promise<void>;

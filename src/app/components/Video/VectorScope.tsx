@@ -4,7 +4,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 // const VectorScope: React.FC<{ bitmap: ImageBitmap | null }> = ({ bitmap }) => {
 const VectorScope: React.FC = () => {
   const { bitmap } = useContext(AppContext);
-  const [hsvData, setHsvData] = useState<Float32Array>();
+  const [hsvData, setHsvData] = useState<Uint8ClampedArray>();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -18,7 +18,17 @@ const VectorScope: React.FC = () => {
       // hsvData && d3.select(canvasRef.current).select("g").remove();
 
       const mid2Time = performance.now();
-      hsvData && draw(bitmap, 400, 400, 20);
+      // hsvData && draw(bitmap, 400, 400, 20);
+      if (hsvData) {
+        const canvas: HTMLCanvasElement = canvasRef.current;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          console.error("Failed to get CanvasRef context");
+        }
+        const img = ctx.createImageData(400, 400);
+        img.data.set(hsvData);
+        ctx.putImageData(img, 0, 0);
+      }
 
       console.log("Converting time = %d", mid1Time - startTime);
       console.log("Clean svg time = %d", mid2Time - mid1Time);
@@ -42,10 +52,10 @@ const VectorScope: React.FC = () => {
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data; // RGBA pixel data
 
-    const hsvPixels: Float32Array =
+    const hsvPixels: Uint8ClampedArray =
       await window.electronAPI.convertrRgbToHsv(data);
 
-    setHsvData(hsvPixels);
+    setHsvData(Uint8ClampedArray);
   };
 
   const draw = (
@@ -97,20 +107,34 @@ const VectorScope: React.FC = () => {
     });
 
     // Draw data points (replace hsvData with your actual data)
-    ctx.strokeStyle = "white";
-    ctx.globalAlpha = 0.01;
-    ctx.lineWidth = 0.5;
-    ctx.beginPath();
-    for (let idx = 0; idx < hsvData.length; idx += 3) {
-      const h = hsvData[idx];
-      const s = hsvData[idx + 1];
-      // const v = hsvData[idx + 2];
+    const getCoordinates = (
+      data: Float32Array,
+      idx: number,
+    ): { x: number; y: number } => {
+      const h = data[idx];
+      const s = data[idx + 1];
+      // const v = data[idx + 2];
 
       const angle = (h / 360) * (2 * Math.PI);
       const radiusScale = s * radius;
       const x = centerX + radiusScale * Math.cos(angle);
       const y = centerY + radiusScale * Math.sin(angle);
 
+      return { x: x, y: y };
+    };
+
+    const { x: xStart, y: yStart } = getCoordinates(hsvData, 0);
+    ctx.beginPath();
+    ctx.lineTo(xStart, yStart);
+
+    ctx.strokeStyle = "white";
+    ctx.globalAlpha = 0.8;
+    ctx.lineWidth = 1.0;
+    for (let idx = 3; idx < hsvData.length; idx += 3) {
+      const { x, y } = getCoordinates(hsvData, idx);
+      // ctx.beginPath();
+      // ctx.arc(x, y, 10, 0, 2 * Math.PI);
+      // ctx.stroke();
       ctx.lineTo(x, y); // Add point to the polyline
     }
     ctx.stroke(); // Draw the polyline once
