@@ -4,6 +4,7 @@ project(vector_scope_live_tests)
 # GoogleTest requires at least C++14
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_definitions(-D__LOG)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -29,6 +30,7 @@ include_directories(${Lib_DIR})
 add_library(
   imageconvert_lib STATIC
   ${Lib_DIR}/transformation.cpp
+  ${Lib_DIR}/perf.cpp
 )
 
 # Setup test

@@ -45,13 +45,11 @@ export default function App() {
       const captureInterval = setInterval(async () => {
         try {
           const bitmap: ImageBitmap = await imageCapture.grabFrame();
-          console.log("Captured Bitmap:", bitmap);
-
           setBitmap(bitmap);
         } catch (error) {
           console.error("Error capturing bitmap:", error);
         }
-      }, 1000);
+      }, 100);
       setCaptureInterval(captureInterval);
     }
   };

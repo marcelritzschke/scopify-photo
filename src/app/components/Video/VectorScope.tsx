@@ -10,34 +10,34 @@ const VectorScope: React.FC = () => {
   useEffect(() => {
     if (bitmap) {
       const startTime = performance.now();
-      const fetchImageDataFromMain = async () =>
+      const fetchImageDataFromMain = async () => {
         await convertImageBitmapToHsv(bitmap);
+      };
       fetchImageDataFromMain();
 
       const mid1Time = performance.now();
-      // hsvData && d3.select(canvasRef.current).select("g").remove();
 
-      const mid2Time = performance.now();
-      // hsvData && draw(bitmap, 400, 400, 20);
       if (hsvData) {
         const canvas: HTMLCanvasElement = canvasRef.current;
         const ctx = canvas.getContext("2d");
         if (!ctx) {
           console.error("Failed to get CanvasRef context");
         }
-        const img = ctx.createImageData(400, 400);
+        canvas.width = 512;
+        canvas.height = 512;
+        const img = ctx.createImageData(512, 512);
         img.data.set(hsvData);
         ctx.putImageData(img, 0, 0);
       }
 
       console.log("Converting time = %d", mid1Time - startTime);
-      console.log("Clean svg time = %d", mid2Time - mid1Time);
-      console.log("Draw svg time = %d", performance.now() - mid2Time);
       console.log("Total time = %d", performance.now() - startTime);
     }
   }, [bitmap]);
 
-  const convertImageBitmapToHsv = async (bitmap: ImageBitmap) => {
+  const convertImageBitmapToHsv = async (
+    bitmap: ImageBitmap,
+  ): Promise<Uint8ClampedArray> => {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     if (!ctx) {
@@ -55,7 +55,8 @@ const VectorScope: React.FC = () => {
     const hsvPixels: Uint8ClampedArray =
       await window.electronAPI.convertrRgbToHsv(data);
 
-    setHsvData(Uint8ClampedArray);
+    setHsvData(hsvPixels);
+    return hsvPixels;
   };
 
   const draw = (
@@ -138,60 +139,11 @@ const VectorScope: React.FC = () => {
       ctx.lineTo(x, y); // Add point to the polyline
     }
     ctx.stroke(); // Draw the polyline once
-
-    // const svg = d3
-    //   .select(canvasRef.current)
-    //   .attr("width", width)
-    //   .attr("height", height)
-    //   .append("g")
-    //   .attr("transform", `translate(${width / 2}, ${height / 2})`); // center the chart
-
-    // const grid = svg.append("g").attr("class", "grid");
-    // for (let i = 1; i <= 5; i++) {
-    //   grid
-    //     .append("circle")
-    //     .attr("r", (i / 5) * radius)
-    //     .attr("fill", "none")
-    //     .attr("stroke", "#ccc")
-    //     .attr("stroke-width", 1);
-    // }
-
-    // const colors = ["red", "green", "blue", "cyan", "magenta", "yellow"];
-    // const angleStep = (2 * Math.PI) / colors.length;
-
-    // colors.forEach((color, i) => {
-    //   const angle = i * angleStep;
-    //   svg
-    //     .append("line")
-    //     .attr("x1", 0)
-    //     .attr("y1", 0)
-    //     .attr("x2", radius * Math.cos(angle))
-    //     .attr("y2", radius * Math.sin(angle))
-    //     .attr("stroke", color)
-    //     .attr("stroke-width", 2);
-    // });
-
-    // for (let idx = 0; idx < hsvData.length; idx += 3) {
-    //   const h = hsvData[idx];
-    //   const s = hsvData[idx + 1];
-    //   const v = hsvData[idx + 2];
-
-    //   const angle = (h / 360) * (2 * Math.PI);
-    //   const radiusScale = s * radius;
-    //   svg
-    //     .append("circle")
-    //     .attr("cx", radiusScale * Math.cos(angle))
-    //     .attr("cy", radiusScale * Math.sin(angle))
-    //     .attr("r", 0.5)
-    //     // .attr('fill', `rgb(${r}, ${g}, ${b})`)
-    //     .attr("fill", `white`)
-    //     .attr("stroke", "none");
-    // }
   };
 
   return (
     <div>
-      <canvas ref={canvasRef}></canvas>
+      <canvas ref={canvasRef} className="border"></canvas>
     </div>
   );
 };

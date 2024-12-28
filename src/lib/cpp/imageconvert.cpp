@@ -6,6 +6,7 @@
 #include <mutex>
 #include <opencv2/opencv.hpp>
 #include "transformation.hpp"
+#include "perf.hpp"
 
 namespace imageconvert
 {
@@ -24,6 +25,8 @@ namespace imageconvert
 
   void RgbToHsv(const FunctionCallbackInfo<Value> &args)
   {
+    PERF_MARK("Program Start");
+
     Isolate *isolate = args.GetIsolate();
 
     if (!args[0]->IsArrayBuffer())
@@ -50,20 +53,16 @@ namespace imageconvert
 
     // HSV output buffer
     int num_pixels = length / 4; // Number of RGBA pixels
-    auto start = std::chrono::high_resolution_clock::now();
-
-    std::vector<char> hsv_flat;
-    transformation::convertImage(num_pixels, data, hsv_flat, 4, 400, 400);
-
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> duration = end - start;
-    std::cout << "Time taken: " << duration.count() << " seconds\n";
+    std::vector<uchar> hsv_flat;
+    transformation::convertImage(num_pixels, data, hsv_flat, 8, 512, 512);
 
     // Create a new ArrayBuffer to return the HSV data
     auto hsv_buffer = ArrayBuffer::New(isolate, hsv_flat.size());
     memcpy(hsv_buffer->Data(), hsv_flat.data(), hsv_flat.size());
 
     args.GetReturnValue().Set(hsv_buffer);
+
+    PERF_MARK("Program End");
   }
 
   void Initialize(Local<Object> exports)

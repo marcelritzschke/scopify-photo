@@ -26,13 +26,14 @@
           }]
         }]
       ],
-      "sources": [ "<(Cpp_Dir)/imageconvert.cpp", "<(Cpp_Dir)/transformation.cpp" ],
+      "sources": [ "<(Cpp_Dir)/imageconvert.cpp", "<(Cpp_Dir)/transformation.cpp", "<(Cpp_Dir)/perf.cpp" ],
       "include_dirs": [
         "<(OpenCV_Include_Dirs)"
       ],
       "libraries": [
         "<(OpenCV_Lib_Dirs)/lib/opencv_world<(OpenCV_Version).lib",
       ],
+      "defines": ["__PERF"]
     }
   ]
 }

@@ -166,7 +166,7 @@ protected:
   void SetUp() override
   {
   }
-  std::vector<char> hsv_flat;
+  std::vector<uchar> hsv_flat;
 };
 
 TEST_F(ConvertImageTest, TestSimple)
@@ -179,7 +179,8 @@ TEST_F(ConvertImageTest, TestSimple)
       255, 0, 255, 255 // 4th Pink = (300, 1, 1)
   };
 
-  transformation::convertImage(num_pixels, data, hsv_flat, 1, 4, 4);
+  transformation::prepareMutex(2, 2);
+  transformation::convertImage(num_pixels, data, hsv_flat, 1, 2, 2);
 
   for (size_t i = 0; i < 100; i++)
   {

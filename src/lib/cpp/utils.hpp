@@ -16,14 +16,7 @@ void logMat(std::string &desc, cv::Mat &inp)
   {
     for (int j = 0; j < cols; j++)
     {
-      // if (std::is_same<T, uchar>::value)
-      // {
-      //   std::cout << static_cast<int>(inp.at<T>(i, j)) << " ";
-      // }
-      // else
-      // {
       std::cout << inp.at<T>(i, j) << " ";
-      // }
     }
     std::cout << std::endl;
   }
