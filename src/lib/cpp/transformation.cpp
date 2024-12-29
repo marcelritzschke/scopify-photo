@@ -13,7 +13,7 @@ namespace transformation
   typedef cv::Point3f Pixel_HSV;
 
   constexpr float pi = 3.14159265358979323846f;
-  static std::mutex mutices[512][512] = {}; // TODO: dynamic number of mutices or accept limit
+  static std::mutex mutices[256][256] = {}; // TODO: dynamic number of mutices or accept limit
 
   void downSample(const cv::Mat &rgba_image, cv::Mat &rgba_downsampled_image, int factor)
   {
@@ -33,6 +33,16 @@ namespace transformation
                                     } });
   }
 
+  void makeTransparent(cv::Mat &rgba_image)
+  {
+    rgba_image.forEach<Pixel_RGBA>([&](Pixel_RGBA &rgba_pixel, const int *position) -> void
+                                   {
+                                    if (rgba_pixel[0] == 0 && rgba_pixel[1] == 0 && rgba_pixel[2] == 0)
+                                    {
+                                      rgba_image.at<Pixel_RGBA>(position[0], position[1])[3] = 0.f;
+                                    } });
+  }
+
   void prepareMutex(int gridSizeX, int gridSizeY)
   {
   }
@@ -46,28 +56,27 @@ namespace transformation
 
     hsv_image.forEach<Pixel_HSV>([gridSizeX, gridSizeY, &sumH, &sumS, &sumV, &count](Pixel_HSV &pixel, const int *position) -> void
                                  {
+                                   // std::cout << "gridsize = (" << gridSizeX << ", " << gridSizeY << ")" << std::endl;
+                                   // std::cout << "pixel = (" << pixel.x << ", " << pixel.y << ", " << pixel.z << ")" << std::endl;
 
-      // std::cout << "gridsize = (" << gridSizeX << ", " << gridSizeY << ")" << std::endl;
-      // std::cout << "pixel = (" << pixel.x << ", " << pixel.y << ", " << pixel.z << ")" << std::endl;
+                                   cv::Vec2f coordinates(cosf((pixel.x - 120) * pi / 180), sinf((pixel.x - 120) * pi / 180));
+                                   coordinates = (pixel.y * coordinates + cv::Vec2f(1.f, 1.f)) / 2.f;
+                                   // std::cout << coordinates << std::endl;
 
-      cv::Vec2f coordinates(cosf(pixel.x * pi / 180), sinf(pixel.x * pi / 180));
-      coordinates = (pixel.y * coordinates + cv::Vec2f(1.f, 1.f)) / 2.f;
-      // std::cout << coordinates << std::endl;
+                                   int x_idx = static_cast<int>(coordinates[0] * gridSizeX);
+                                   int y_idx = static_cast<int>(coordinates[1] * gridSizeY);
 
-      int x_idx = static_cast<int>(coordinates[0] * gridSizeX);
-      int y_idx = static_cast<int>(coordinates[1] * gridSizeY);
+                                   // std::cout << "x_idx = " << x_idx << " y_idx = " << y_idx << std::endl;
 
-      // std::cout << "x_idx = " << x_idx << " y_idx = " << y_idx << std::endl;
+                                   x_idx = std::min(x_idx, gridSizeX - 1);
+                                   y_idx = std::min(y_idx, gridSizeY - 1);
 
-      x_idx = std::min(x_idx, gridSizeX - 1);
-      y_idx = std::min(y_idx, gridSizeY - 1);
-
-      // std::cout << "x=" << pixel.x << " y=" << pixel.y << " z=" << pixel.z << std::endl;
-      std::lock_guard<std::mutex> lock(mutices[x_idx][y_idx]);
-      sumH.at<float>(x_idx, y_idx) += pixel.x;
-      sumS.at<float>(x_idx, y_idx) += pixel.y;
-      sumV.at<float>(x_idx, y_idx) += pixel.z;
-      count.at<float>(x_idx, y_idx) += 1.0f; });
+                                   // std::cout << "x=" << pixel.x << " y=" << pixel.y << " z=" << pixel.z << std::endl;
+                                   std::lock_guard<std::mutex> lock(mutices[x_idx][y_idx]);
+                                   sumH.at<float>(x_idx, y_idx) += pixel.x;
+                                   sumS.at<float>(x_idx, y_idx) += pixel.y;
+                                   sumV.at<float>(x_idx, y_idx) += pixel.z;
+                                   count.at<float>(x_idx, y_idx) += 1.0f; });
 
     // Compute the average for each grid cell where count > 0
     cv::Mat avgH = sumH / count / 2.f / 255.f; // scale to [0, 180] then convert back to float since later we need to convert all channels back to uchar where we multiply 255
@@ -150,9 +159,14 @@ namespace transformation
 #endif
     PERF_MARK("rgba_image_post");
 
+    transformation::makeTransparent(rgba_image_post);
+#ifdef __LOG
+    logMat<cv::Vec4b>(std::string("rgba_image_post_transparent"), rgba_image_post);
+#endif
+    PERF_MARK("rgba_image_post_transparent");
+
     dst.insert(dst.begin(), rgba_image_post.datastart, rgba_image_post.dataend);
 
     PERF_MARK("Convert Image End");
   }
-
 }

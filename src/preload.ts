@@ -5,11 +5,13 @@ import { contextBridge, ipcRenderer } from "electron";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   getCaptureId: () => ipcRenderer.invoke("video:getCaptureId"),
+  getBitmapHsv: () => ipcRenderer.invoke("imageconvert:getHsv"),
   getDesktopSources: (opts: Electron.SourcesOptions) =>
     ipcRenderer.invoke("desktopcapturer:getSources", opts),
-  convertrRgbToHsv: (rgb: Uint8ClampedArray<ArrayBufferLike>) =>
-    ipcRenderer.invoke("imageconvert:rgbToHsv", rgb),
-  triggerImageGrab: () => ipcRenderer.send("trigger-image-grab"),
+  setBitmap: (bitmap: Uint8ClampedArray<ArrayBufferLike>) =>
+    ipcRenderer.send("imageconvert:set-bitmap", bitmap),
+  terminateImageConvert: () => ipcRenderer.send("imageconvert:terminate"),
+  triggerImageConvert: () => ipcRenderer.send("imageconvert:trigger"),
   setCaptureId: (id: string) => ipcRenderer.send("set-captureid", id),
   minimizeWindow: () => ipcRenderer.send("title-bar:minimize-window"),
   maximizeWindow: () => ipcRenderer.send("title-bar:maximize-window"),

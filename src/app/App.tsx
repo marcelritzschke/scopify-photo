@@ -26,6 +26,7 @@ export default function App() {
         setStream(null);
         setBitmap(null);
         clearInterval(interval);
+        await window.electronAPI.terminateImageConvert();
         break;
       case VideoSelectionModalState.Cropping:
         const streamLocal = await getMediaStream();
@@ -34,6 +35,7 @@ export default function App() {
         break;
       case VideoSelectionModalState.Closed:
         setImageCaptureInterval();
+        await window.electronAPI.triggerImageConvert();
         break;
     }
 

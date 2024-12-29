@@ -40,8 +40,6 @@ namespace imageconvert
     uint8_t *data = static_cast<uint8_t *>(buffer->Data());
     size_t length = buffer->ByteLength();
 
-    std::cout << "Buffer length: " << length << std::endl;
-
     // Ensure the length is divisible by 4 (RGBA components per pixel)
     if (length % 4 != 0)
     {
@@ -54,7 +52,7 @@ namespace imageconvert
     // HSV output buffer
     int num_pixels = length / 4; // Number of RGBA pixels
     std::vector<uchar> hsv_flat;
-    transformation::convertImage(num_pixels, data, hsv_flat, 8, 512, 512);
+    transformation::convertImage(num_pixels, data, hsv_flat, 4, 256, 256);
 
     // Create a new ArrayBuffer to return the HSV data
     auto hsv_buffer = ArrayBuffer::New(isolate, hsv_flat.size());

@@ -9,6 +9,7 @@ import {
 import path from "path";
 import started from "electron-squirrel-startup";
 import createAboutWindow from "./about";
+import { Worker } from "worker_threads";
 
 const isDev = process.env.NODE_ENV !== "production" ? true : false;
 const isMac = process.platform === "darwin";
@@ -18,18 +19,51 @@ if (started) {
   app.quit();
 }
 
+let worker: Worker;
 let mainWindow: BrowserWindow;
 let captureId: string | null;
+let bitmapGlobal: Uint8ClampedArray;
+let bitmapHsvGlobal: Uint8ClampedArray;
 
 const handleSetCaptureId = (
-  event: Electron.IpcMainInvokeEvent,
+  _: Electron.IpcMainInvokeEvent,
   id: string | null,
 ) => {
   captureId = id;
 };
 
-const triggerImageGrab = async (event: Electron.IpcMainInvokeEvent) => {
-  console.log("here in main", event);
+const handleSetBitmap = (
+  _: Electron.IpcMainInvokeEvent,
+  bitmap: Uint8ClampedArray<ArrayBufferLike>,
+) => {
+  bitmapGlobal = bitmap; //TODO: check performance of this, maybe use sharedarraybuffer and set once the bitmap size is determined on client end
+  worker.postMessage(bitmapGlobal);
+};
+
+const triggerImageConvert = async (_: Electron.IpcMainInvokeEvent) => {
+  let pathToWorker = null;
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    pathToWorker = path.join(__dirname, "../../src/worker.js");
+  } else {
+    pathToWorker = require(path.join(process.resourcesPath, "worker.js"));
+  }
+
+  let addonPath: string = null;
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    addonPath = path.join(__dirname, "../../build/Release/imageconvert.node");
+  } else {
+    addonPath = path.join(process.resourcesPath, "imageconvert.node");
+  }
+
+  worker = new Worker(pathToWorker, {
+    workerData: { addonPath: addonPath },
+  });
+  worker.on("message", (result) => {
+    bitmapHsvGlobal = result;
+  });
+  worker.on("error", (msg) => {
+    console.log(msg);
+  });
 };
 
 const createWindow = () => {
@@ -91,7 +125,7 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
   ipcMain.on("set-captureid", handleSetCaptureId);
-  ipcMain.on("trigger-image-grab", triggerImageGrab);
+  ipcMain.on("imageconvert:set-bitmap", handleSetBitmap);
   ipcMain.on("title-bar:minimize-window", () => {
     BrowserWindow.getFocusedWindow().minimize();
   });
@@ -109,6 +143,10 @@ app.on("ready", () => {
   });
   ipcMain.on("title-bar:toggle-dev-tools", () => {
     mainWindow.webContents.toggleDevTools();
+  });
+  ipcMain.on("imageconvert:trigger", triggerImageConvert);
+  ipcMain.on("imageconvert:terminate", () => {
+    worker && worker.terminate();
   });
 
   ipcMain.handle("video:getCaptureId", () => {
@@ -132,20 +170,9 @@ app.on("ready", () => {
     },
   );
 
-  ipcMain.handle(
-    "imageconvert:rgbToHsv",
-    async (event, rgb: Uint8ClampedArray<ArrayBufferLike>) => {
-      let addon = null;
-      if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-        addon = require(
-          path.join(__dirname, "../../build/Release/imageconvert.node"),
-        );
-      } else {
-        addon = require(path.join(process.resourcesPath, "imageconvert.node"));
-      }
-      return new Uint8ClampedArray(addon.rgbToHsv(rgb.buffer));
-    },
-  );
+  ipcMain.handle("imageconvert:getHsv", async () => {
+    return bitmapHsvGlobal;
+  });
 
   globalShortcut.register("CommandOrControl+W", () => {
     BrowserWindow.getFocusedWindow().close();

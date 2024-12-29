@@ -33,7 +33,9 @@
       "libraries": [
         "<(OpenCV_Lib_Dirs)/lib/opencv_world<(OpenCV_Version).lib",
       ],
-      "defines": ["__PERF"]
+      "defines": [
+        "__PERF",
+        ]
     }
   ]
 }
