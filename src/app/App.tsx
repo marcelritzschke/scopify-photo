@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Navbar from "@/app/components/navigation/Navbar";
 import VideoPreview from "@/app/components/video/VideoPreview";
 import { AppContext } from "./AppContext";
@@ -66,15 +66,15 @@ export default function App() {
       }}
     >
       <Navbar />
-      {appState === VideoSelectionModalState.Closed && (
-        <div className="mt-2">
+      <div className="mt-7">
+        {appState === VideoSelectionModalState.Closed && (
           <VideoPreview stream={stream} />
-        </div>
-      )}
+        )}
 
-      {appState !== VideoSelectionModalState.Closed && (
-        <VideoSelectionModal stream={stream} />
-      )}
+        {appState !== VideoSelectionModalState.Closed && (
+          <VideoSelectionModal stream={stream} />
+        )}
+      </div>
     </AppContext.Provider>
   );
 }

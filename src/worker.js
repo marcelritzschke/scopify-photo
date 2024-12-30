@@ -1,12 +1,17 @@
-const path = require("path");
 const { parentPort, workerData } = require("worker_threads");
 const addon = require(workerData.addonPath);
 
 parentPort.on("message", (msg) => {
-  const bitmapGlobal = msg;
+  const { bitmap, width, height, target_width, target_height } = msg;
 
-  if (bitmapGlobal) {
-    const hsvData = new Uint8ClampedArray(addon.rgbToHsv(bitmapGlobal.buffer));
-    parentPort.postMessage(hsvData);
+  if (bitmap) {
+    const hsvData = new Uint8ClampedArray(
+      addon.rgbToHsv(bitmap.buffer, width, height, target_width, target_height),
+    );
+    parentPort.postMessage({
+      data: hsvData,
+      width: target_width,
+      height: target_height,
+    });
   }
 });

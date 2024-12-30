@@ -4,7 +4,7 @@ project(vector_scope_live_tests)
 # GoogleTest requires at least C++14
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-add_definitions(-D__LOG)
+add_definitions(-D__LOG -D__TEST)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -20,17 +20,19 @@ set(OpenCV_DIR "C:/tools/opencv/build")
 
 find_package(OpenCV REQUIRED)
 
-include_directories(${OpenCV_INCLUDE_DIRS})
-
 # Setup library
 set(Lib_DIR "${CMAKE_CURRENT_LIST_DIR}/..")
 
-include_directories(${Lib_DIR})
+include_directories(${Lib_DIR} ${OpenCV_INCLUDE_DIRS} ${gtest_build_include_dirs})
 
 add_library(
   imageconvert_lib STATIC
   ${Lib_DIR}/transformation.cpp
   ${Lib_DIR}/perf.cpp
+)
+target_link_libraries(
+  imageconvert_lib
+  GTest::gtest_main
 )
 
 # Setup test

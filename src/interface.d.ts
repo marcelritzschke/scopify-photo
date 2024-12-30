@@ -1,10 +1,20 @@
 export interface IElectronAPI {
   getCaptureId: () => Promise<string | null>;
-  getBitmapHsv: () => Promise<Uint8ClampedArray | null>;
+  getBitmapHsv: () => Promise<{
+    data: Uint8ClampedArray | null;
+    width: number;
+    height: number;
+  }>;
   getDesktopSources: (
     opts: Electron.SourcesOptions,
   ) => Promise<DesktopSource[]>;
-  setBitmap: (bitmap: Uint8ClampedArray<ArrayBufferLike>) => Promise<void>;
+  setBitmap: (
+    bitmap: Uint8ClampedArray<ArrayBufferLike>,
+    width: number,
+    height: number,
+    target_width: number,
+    target_height: number,
+  ) => Promise<void>;
   setCaptureId: (id: string) => Promise<void>;
   terminateImageConvert: () => Promise<void>;
   triggerImageConvert: () => Promise<void>;

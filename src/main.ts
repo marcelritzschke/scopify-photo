@@ -22,8 +22,9 @@ if (started) {
 let worker: Worker;
 let mainWindow: BrowserWindow;
 let captureId: string | null;
-let bitmapGlobal: Uint8ClampedArray;
 let bitmapHsvGlobal: Uint8ClampedArray;
+let bitmapWidth: number;
+let bitmapHeight: number;
 
 const handleSetCaptureId = (
   _: Electron.IpcMainInvokeEvent,
@@ -35,9 +36,18 @@ const handleSetCaptureId = (
 const handleSetBitmap = (
   _: Electron.IpcMainInvokeEvent,
   bitmap: Uint8ClampedArray<ArrayBufferLike>,
+  width: number,
+  height: number,
+  target_width: number,
+  target_height: number,
 ) => {
-  bitmapGlobal = bitmap; //TODO: check performance of this, maybe use sharedarraybuffer and set once the bitmap size is determined on client end
-  worker.postMessage(bitmapGlobal);
+  worker.postMessage({
+    bitmap: bitmap,
+    width: width,
+    height: height,
+    target_width: target_width,
+    target_height: target_height,
+  });
 };
 
 const triggerImageConvert = async (_: Electron.IpcMainInvokeEvent) => {
@@ -59,7 +69,9 @@ const triggerImageConvert = async (_: Electron.IpcMainInvokeEvent) => {
     workerData: { addonPath: addonPath },
   });
   worker.on("message", (result) => {
-    bitmapHsvGlobal = result;
+    bitmapHsvGlobal = result.data;
+    bitmapWidth = result.width;
+    bitmapHeight = result.height;
   });
   worker.on("error", (msg) => {
     console.log(msg);
@@ -171,7 +183,7 @@ app.on("ready", () => {
   );
 
   ipcMain.handle("imageconvert:getHsv", async () => {
-    return bitmapHsvGlobal;
+    return { data: bitmapHsvGlobal, width: bitmapWidth, height: bitmapHeight };
   });
 
   globalShortcut.register("CommandOrControl+W", () => {

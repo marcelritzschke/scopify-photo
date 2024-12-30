@@ -33,7 +33,7 @@ export default function () {
 
   return (
     <>
-      <div className="titlebar fixed left-0 top-0 flex w-full justify-between border-b border-slate-700 bg-gray-800 p-0">
+      <div className="titlebar fixed left-0 top-0 z-50 flex w-full justify-between border-b border-slate-700 bg-gray-800 p-0">
         <div className="titlebar-menu mb-1 ml-1 mt-1 text-left text-white/75">
           <Menu>
             <MenuButton className="rounded-md bg-gray-800 px-2 focus:outline-none data-[hover]:bg-gray-700 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white">
