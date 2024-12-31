@@ -17,3 +17,17 @@ export interface DragOffset {
   offsetX: number;
   offsetY: number;
 }
+
+export interface SubMenu {
+  label: string;
+  width: string;
+  submenu: Item[];
+}
+
+export interface Item {
+  type: string;
+  label?: string;
+  shortcut?: string;
+  callback?: () => void;
+  submenu?: Item[];
+}

@@ -84,7 +84,8 @@ const createWindow = () => {
     title: "Vector Scope Live",
     frame: false,
     width: isDev ? 1000 : 800,
-    minWidth: 400,
+    minWidth: 276,
+    minHeight: 276,
     height: 600,
     backgroundColor: "black",
     webPreferences: {
