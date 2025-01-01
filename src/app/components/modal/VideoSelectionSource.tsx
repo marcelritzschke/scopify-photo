@@ -23,7 +23,7 @@ const VideoSelectionSource: React.FC<VideoSelectionSourceParams> = ({
 
   if (sources.length) {
     return (
-      <div className="mt-4 grid h-96 grid-cols-2 gap-4 overflow-auto [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500 [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 [&::-webkit-scrollbar]:w-2">
+      <div className="mt-4 grid h-96 grid-cols-2 gap-4 overflow-auto px-4 [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500 [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 [&::-webkit-scrollbar]:w-2">
         {sources.map((source, idx) => {
           return (
             <div key={idx}>

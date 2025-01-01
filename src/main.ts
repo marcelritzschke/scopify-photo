@@ -88,6 +88,7 @@ const createWindow = () => {
     minHeight: 276,
     height: 600,
     backgroundColor: "black",
+    alwaysOnTop: true,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: true,

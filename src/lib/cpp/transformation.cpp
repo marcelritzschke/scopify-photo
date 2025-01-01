@@ -337,12 +337,21 @@ namespace transformation
 
     /*************************************************************************
      *
-     * Add some blur to smoothen the points into each other
+     * Resize according to renderer request
      *
      *************************************************************************/
+    float scale_x = static_cast<float>(target_width) / _grid_size_x;
+    float scale_y = static_cast<float>(target_height) / _grid_size_y;
+
+    int interpolation = cv::INTER_AREA;
+    if (scale_x > 1.f && scale_y > 1.f)
+    {
+      interpolation = cv::INTER_LINEAR;
+    }
+
     cv::Mat rgba_scaled;
-    cv::resize(rgba_blurred, rgba_scaled, cv::Size(), static_cast<float>(target_width) / _grid_size_x, static_cast<float>(target_height) / _grid_size_y, cv::INTER_AREA);
-    PERF_MARK("rgba_blurred");
+    cv::resize(rgba_blurred, rgba_scaled, cv::Size(), scale_x, scale_y, interpolation);
+    PERF_MARK("rgba_scaled");
 
     /*************************************************************************
      *

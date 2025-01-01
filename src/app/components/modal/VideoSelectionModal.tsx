@@ -26,8 +26,8 @@ const VideoSelectionModal: React.FC<VideoSelectionModalProps> = ({
   };
 
   const onSelected = async (id: string) => {
-    await window.electronAPI.setCaptureId(id);
     requestAppStateTransition(VideoSelectionModalState.Cropping);
+    await window.electronAPI.setCaptureId(id);
   };
 
   const MainView: React.FC = () => {
@@ -57,19 +57,19 @@ const VideoSelectionModal: React.FC<VideoSelectionModalProps> = ({
         <div className="flex min-h-full items-center justify-center p-4">
           <DialogPanel
             transition
-            className="data-[closed]:transform-[scale(95%)] w-full max-w-md rounded-xl bg-white/5 p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:opacity-0"
+            className="data-[closed]:transform-[scale(95%)] w-full max-w-md rounded-xl bg-white/5 py-2 backdrop-blur-2xl duration-300 ease-out data-[closed]:opacity-0"
           >
             <DialogTitle
               as="h3"
-              className="text-center text-xl font-medium text-white"
+              className="px-1 text-center text-xl font-medium text-white"
             >
               Screen Capture
             </DialogTitle>
-            <p className="mt-2 text-center text-sm/6 text-white/75">
+            <p className="mt-2 px-1 text-center text-sm/6 text-white/75">
               Select the screen or application which will be live captured.
             </p>
             <MainView />
-            <div className="mt-4 flex items-center justify-end border-t border-gray-700">
+            <div className="mr-2 flex items-center justify-end">
               <BackButton
                 state={appState}
                 transition={requestAppStateTransition}

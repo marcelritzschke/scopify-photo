@@ -77,8 +77,8 @@ const VectorScope: React.FC = () => {
       data,
       bitmap.width,
       bitmap.height,
-      windowWidth - 20,
-      windowWidth - 20,
+      windowWidth,
+      windowWidth,
     );
 
     const hsvGridStruct = await window.electronAPI.getBitmapHsv();
@@ -170,9 +170,9 @@ const VectorScope: React.FC = () => {
     <div className="relative -z-20">
       <canvas ref={canvasShaderRef} />
       <div className="absolute inset-0 -z-10">
-        <canvas ref={canvasCosyRef} />
+        <canvas ref={canvasCosyRef} className="border-2 border-blue-950" />
         <div className="absolute inset-0 -z-0">
-          <canvas ref={canvasRef}></canvas>
+          <canvas ref={canvasRef} />
         </div>
       </div>
     </div>

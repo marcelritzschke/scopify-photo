@@ -31,25 +31,28 @@ export default function () {
         <div className="titlebar-menu mb-1 ml-1 mt-1 text-left text-white/75">
           <MenuBar />
         </div>
-        <div className="mb-1 ml-3 mt-1 hidden text-center text-white/75 sm:inline-block">
+        <div className="my-1 hidden text-center text-white/75 sm:inline-block">
           Vector Scope Live
         </div>
-        <div className="titlebar-menu grid grid-cols-3 items-center gap-x-3 text-right text-white/75">
-          <FontAwesomeIcon
-            icon={faWindowMinimize}
-            className="m-auto mb-1 ml-3 mt-1 cursor-pointer"
+        <div className="titlebar-menu grid grid-cols-3 items-center text-right text-white/75">
+          <div
+            className="flex h-full w-full justify-center p-0 hover:bg-gray-500/50"
             onClick={minimizeWindow}
-          />
-          <FontAwesomeIcon
-            icon={faWindowMaximize}
-            className="m-auto mb-1 mt-1 cursor-pointer"
+          >
+            <FontAwesomeIcon icon={faWindowMinimize} className="mx-2 my-auto" />
+          </div>
+          <div
+            className="flex h-full w-full justify-center p-0 hover:bg-gray-500/50"
             onClick={maximizeWindow}
-          />
-          <FontAwesomeIcon
-            icon={faXmark}
-            className="m-auto mb-1 mr-3 mt-1 cursor-pointer"
+          >
+            <FontAwesomeIcon icon={faWindowMaximize} className="mx-2 my-auto" />
+          </div>
+          <div
+            className="flex h-full w-full justify-center p-0 hover:bg-gray-500/50"
             onClick={closeWindow}
-          />
+          >
+            <FontAwesomeIcon icon={faXmark} className="mx-2 my-auto" />
+          </div>
         </div>
       </div>
     </>

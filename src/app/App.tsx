@@ -20,6 +20,7 @@ export default function App() {
     newState: VideoSelectionModalState,
   ) => {
     isDev && console.log(`Switching App State from ${appState} to ${newState}`);
+    setAppState(newState);
 
     switch (newState) {
       case VideoSelectionModalState.Selecting:
@@ -38,8 +39,6 @@ export default function App() {
         await window.electronAPI.triggerImageConvert();
         break;
     }
-
-    setAppState(newState);
   };
 
   const setImageCaptureInterval = () => {
@@ -66,11 +65,10 @@ export default function App() {
       }}
     >
       <Navbar />
-      <div className="mt-7">
+      <div className="mt-[29px]">
         {appState === VideoSelectionModalState.Closed && (
           <VideoPreview stream={stream} />
         )}
-
         {appState !== VideoSelectionModalState.Closed && (
           <VideoSelectionModal stream={stream} />
         )}

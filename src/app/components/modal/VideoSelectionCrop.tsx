@@ -134,7 +134,7 @@ const VideoSelectionCrop: React.FC<VideoSelectionCropProps> = ({ stream }) => {
 
   return (
     <div
-      className="mt-4"
+      className="mx-4 mt-4"
       style={{ position: "relative", userSelect: "none" }}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
