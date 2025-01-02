@@ -15,7 +15,7 @@ interface VideoSelectionCropProps {
 }
 
 const VideoSelectionCrop: React.FC<VideoSelectionCropProps> = ({ stream }) => {
-  const { isDev } = useContext(AppContext);
+  const { isDev, bitmap } = useContext(AppContext);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -47,16 +47,27 @@ const VideoSelectionCrop: React.FC<VideoSelectionCropProps> = ({ stream }) => {
     }
   }, [stream]);
 
-  const updateCanvasSize = (width: number, height: number) => {
+  const updateCanvasSize = async (width: number, height: number) => {
     canvasRef.current.width = width;
     canvasRef.current.height = height;
 
-    setBoundingBox({
-      startX: 0,
-      startY: 0,
-      width: width,
-      height: height,
-    });
+    const normalizedBoundingBox =
+      await window.electronAPI.getNormalizedBoundingBox();
+    if (normalizedBoundingBox) {
+      setBoundingBox({
+        startX: normalizedBoundingBox.startX * width,
+        startY: normalizedBoundingBox.startY * height,
+        width: normalizedBoundingBox.width * width,
+        height: normalizedBoundingBox.height * height,
+      });
+    } else {
+      setBoundingBox({
+        startX: 0,
+        startY: 0,
+        width: width,
+        height: height,
+      });
+    }
   };
 
   useEffect(() => {
@@ -68,16 +79,11 @@ const VideoSelectionCrop: React.FC<VideoSelectionCropProps> = ({ stream }) => {
   }, [boundingBox]);
 
   useEffect(() => {
-    console.log("videoref udated");
     if (videoRef.current) {
       // Set canvas size once media stream dimension are received
       videoRef.current.onloadedmetadata = () => {
         if (canvasRef.current && videoRef.current) {
           updateCanvasSize(
-            videoRef.current.offsetWidth,
-            videoRef.current.offsetHeight,
-          );
-          console.log(
             videoRef.current.offsetWidth,
             videoRef.current.offsetHeight,
           );
@@ -105,8 +111,6 @@ const VideoSelectionCrop: React.FC<VideoSelectionCropProps> = ({ stream }) => {
   const handleMouseMove = throttle((e: React.MouseEvent) => {
     if (!dragging) return;
 
-    if (dragging === "full") console.log("full");
-
     const canvas = canvasRef.current ?? null;
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
@@ -130,6 +134,15 @@ const VideoSelectionCrop: React.FC<VideoSelectionCropProps> = ({ stream }) => {
 
   const handleMouseUp = () => {
     setDragging(null);
+    const canvas = canvasRef.current ?? null;
+    const normalizedBoundingBox: BoundingBox = {
+      startX: boundingBox.startX / canvas.width,
+      startY: boundingBox.startY / canvas.height,
+      width: boundingBox.width / canvas.width,
+      height: boundingBox.height / canvas.height,
+    };
+
+    window.electronAPI.setNormalizedBoundingBox(normalizedBoundingBox);
   };
 
   return (

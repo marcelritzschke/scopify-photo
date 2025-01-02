@@ -10,6 +10,7 @@ import path from "path";
 import started from "electron-squirrel-startup";
 import createAboutWindow from "./about";
 import { Worker } from "worker_threads";
+import { BoundingBox } from "./types/types";
 
 const isDev = process.env.NODE_ENV !== "production" ? true : false;
 const isMac = process.platform === "darwin";
@@ -25,6 +26,7 @@ let captureId: string | null;
 let bitmapHsvGlobal: Uint8ClampedArray;
 let bitmapWidth: number;
 let bitmapHeight: number;
+let normalizedBoundingBox: BoundingBox;
 
 const handleSetCaptureId = (
   _: Electron.IpcMainInvokeEvent,
@@ -47,6 +49,10 @@ const handleSetBitmap = (
     height: height,
     target_width: target_width,
     target_height: target_height,
+    bbox_startX: (normalizedBoundingBox?.startX ?? 0) * width,
+    bbox_startY: (normalizedBoundingBox?.startY ?? 0) * height,
+    bbox_width: (normalizedBoundingBox?.width ?? 1) * width,
+    bbox_height: (normalizedBoundingBox?.height ?? 1) * height,
   });
 };
 
@@ -83,10 +89,10 @@ const createWindow = () => {
   mainWindow = new BrowserWindow({
     title: "Vector Scope Live",
     frame: false,
-    width: isDev ? 1000 : 800,
+    width: isDev ? 550 : 300,
     minWidth: 276,
     minHeight: 276,
-    height: 600,
+    height: 330,
     backgroundColor: "black",
     alwaysOnTop: true,
     webPreferences: {
@@ -162,11 +168,16 @@ app.on("ready", () => {
   ipcMain.on("imageconvert:terminate", () => {
     worker && worker.terminate();
   });
+  ipcMain.on("set-boundingbox", (_, boundingBox: BoundingBox) => {
+    normalizedBoundingBox = boundingBox;
+  });
 
+  ipcMain.handle("get-boundingbox", () => {
+    return normalizedBoundingBox;
+  });
   ipcMain.handle("video:getCaptureId", () => {
     return captureId;
   });
-
   ipcMain.handle(
     "desktopcapturer:getSources",
     async (event, opts: Electron.SourcesOptions) => {
@@ -183,7 +194,6 @@ app.on("ready", () => {
       });
     },
   );
-
   ipcMain.handle("imageconvert:getHsv", async () => {
     return { data: bitmapHsvGlobal, width: bitmapWidth, height: bitmapHeight };
   });

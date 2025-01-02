@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import Navbar from "@/app/components/navigation/Navbar";
-import VideoPreview from "@/app/components/video/VideoPreview";
 import { AppContext } from "./AppContext";
 import { VideoSelectionModalState } from "@/types/enums";
 import VideoSelectionModal from "@/app/components/modal/VideoSelectionModal";
 import { getMediaStream } from "@/lib/utils";
+import OffCanvasVideoCrop from "./components/OffCanvasVideoCrop";
+import VectorScope from "./components/video/VectorScope";
 
 export default function App() {
   const isDev = process.env.NODE_ENV !== "production" ? true : false;
@@ -20,23 +21,38 @@ export default function App() {
     newState: VideoSelectionModalState,
   ) => {
     isDev && console.log(`Switching App State from ${appState} to ${newState}`);
-    setAppState(newState);
 
     switch (newState) {
       case VideoSelectionModalState.Selecting:
+        setAppState(newState);
+
         setStream(null);
         setBitmap(null);
         clearInterval(interval);
+        await window.electronAPI.setNormalizedBoundingBox(null);
         await window.electronAPI.terminateImageConvert();
         break;
       case VideoSelectionModalState.Cropping:
+        setAppState(newState);
+
         const streamLocal = await getMediaStream();
         setStream(streamLocal);
         setImageCapture(new ImageCapture(streamLocal.getVideoTracks()[0]));
         break;
       case VideoSelectionModalState.Closed:
+        setAppState(newState);
+
         setImageCaptureInterval();
         await window.electronAPI.triggerImageConvert();
+        break;
+      case VideoSelectionModalState.Cancelled:
+        setStream(null);
+        setBitmap(null);
+        clearInterval(interval);
+        await window.electronAPI.setNormalizedBoundingBox(null);
+        await window.electronAPI.terminateImageConvert();
+
+        setAppState(VideoSelectionModalState.Closed);
         break;
     }
   };
@@ -62,12 +78,19 @@ export default function App() {
         appState: appState,
         requestAppStateTransition: requestAppStateTransition,
         bitmap: bitmap,
+        fontSize: parseFloat(
+          getComputedStyle(document.documentElement).fontSize,
+        ),
+        navBarHeight: 29,
       }}
     >
       <Navbar />
-      <div className="mt-[29px]">
+      <div className="m-2 mt-[calc(29px+0.5rem)]">
         {appState === VideoSelectionModalState.Closed && (
-          <VideoPreview stream={stream} />
+          <>
+            <OffCanvasVideoCrop stream={stream} />
+            <VectorScope />
+          </>
         )}
         {appState !== VideoSelectionModalState.Closed && (
           <VideoSelectionModal stream={stream} />

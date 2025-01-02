@@ -22,4 +22,5 @@ body {
   /* max-width: 38rem; */
   padding: 0rem;
   font-size: small;
+  overflow-x: hidden;
 }

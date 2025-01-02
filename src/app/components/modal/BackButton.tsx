@@ -12,7 +12,7 @@ const BackButton: React.FC<{
         <div
           className="mt-2 cursor-pointer text-white/75 hover:underline"
           onClick={() => {
-            transition(VideoSelectionModalState.Closed);
+            transition(VideoSelectionModalState.Cancelled);
           }}
         >
           Cancel

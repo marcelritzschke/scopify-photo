@@ -1,17 +1,15 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import VideoPlayer from "./VideoPlay";
-import VectorScope from "./VectorScope";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons/faChevronRight";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons/faChevronLeft";
 import { Transition } from "@headlessui/react";
+import VideoSelectionCrop from "./modal/VideoSelectionCrop";
 
-interface VideoPreviewProps {
+interface OffCanvasVideoCropProps {
   stream: MediaStream | null;
 }
 
-const VideoPreview: React.FC<VideoPreviewProps> = ({ stream }) => {
-  const videoRef = useRef(null);
+const OffCanvasVideoCrop: React.FC<OffCanvasVideoCropProps> = ({ stream }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
@@ -39,15 +37,14 @@ const VideoPreview: React.FC<VideoPreviewProps> = ({ stream }) => {
           >
             <div className="fixed left-0 top-[29px] h-[calc(100vh-29px)] w-2/3 bg-black/95 shadow-md">
               <div className="m-0 items-center">
-                <VideoPlayer mediaStream={stream} videoRef={videoRef} />
+                <VideoSelectionCrop stream={stream} />
               </div>
             </div>
           </Transition>
-          <VectorScope />
         </>
       )}
     </>
   );
 };
 
-export default VideoPreview;
+export default OffCanvasVideoCrop;

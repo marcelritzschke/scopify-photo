@@ -21,8 +21,8 @@ const VideoSelectionModal: React.FC<VideoSelectionModalProps> = ({
 }) => {
   const { appState, requestAppStateTransition } = useContext(AppContext);
 
-  const close = () => {
-    requestAppStateTransition(VideoSelectionModalState.Closed);
+  const cancelled = () => {
+    requestAppStateTransition(VideoSelectionModalState.Cancelled);
   };
 
   const onSelected = async (id: string) => {
@@ -50,7 +50,7 @@ const VideoSelectionModal: React.FC<VideoSelectionModalProps> = ({
       open={true}
       as="div"
       className="relative z-10 focus:outline-none"
-      onClose={close}
+      onClose={cancelled}
     >
       <DialogBackdrop className="fixed inset-0 bg-black/50" />
       <div className="fixed inset-0 z-10 w-screen overflow-y-auto">

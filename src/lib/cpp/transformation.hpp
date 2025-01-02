@@ -24,7 +24,18 @@ namespace transformation
         Transformation(int grid_size_x, int grid_size_y);
         ~Transformation() {};
 
-        void convertImage(int num_pixels, uint8_t *data, std::vector<uchar> &dst, int width, int height, int target_width, int target_height, bool use_lut = true);
+        void convertImage(int num_pixels,
+                          uint8_t *data,
+                          std::vector<uchar> &dst,
+                          int width,
+                          int height,
+                          int target_width,
+                          int target_height,
+                          int bbox_startX,
+                          int bbox_startY,
+                          int bbox_width,
+                          int bbox_height,
+                          bool use_lut = true);
 
     private:
         int _grid_size_x;

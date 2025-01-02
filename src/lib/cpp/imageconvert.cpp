@@ -44,6 +44,10 @@ namespace imageconvert
     auto bitmap_height_maybe = Local<v8::Int32>::Cast(args[2])->Uint32Value(context);
     auto grid_size_x_maybe = Local<v8::Int32>::Cast(args[3])->Uint32Value(context);
     auto grid_size_y_maybe = Local<v8::Int32>::Cast(args[4])->Uint32Value(context);
+    auto bbox_startX_maybe = Local<v8::Int32>::Cast(args[5])->Uint32Value(context);
+    auto bbox_startY_maybe = Local<v8::Int32>::Cast(args[6])->Uint32Value(context);
+    auto bbox_width_maybe = Local<v8::Int32>::Cast(args[7])->Uint32Value(context);
+    auto bbox_height_maybe = Local<v8::Int32>::Cast(args[8])->Uint32Value(context);
 
     if (!bitmap_width_maybe.IsJust() || !bitmap_height_maybe.IsJust())
     {
@@ -82,9 +86,33 @@ namespace imageconvert
       return;
     }
 
+    int32_t bbox_startX;
+    int32_t bbox_startY;
+    int32_t bbox_width;
+    int32_t bbox_height;
+    if (!bbox_startX_maybe.IsJust() || !bbox_startY_maybe.IsJust() ||
+        !bbox_width_maybe.IsJust() || !bbox_height_maybe.IsJust())
+    {
+      bbox_startX = 0;
+      bbox_startY = 0;
+      bbox_width = width;
+      bbox_height = height;
+    }
+    else
+    {
+
+      bbox_startX = bbox_startX_maybe.FromJust();
+      bbox_startY = bbox_startY_maybe.FromJust();
+      bbox_width = bbox_width_maybe.FromJust();
+      bbox_height = bbox_height_maybe.FromJust();
+    }
+
+    std::cout << bbox_startX << ", " << bbox_startY << ", " << bbox_width << ", " << bbox_height << std::endl;
+    std::cout << width << ", " << height << std::endl;
+
     auto &transf = transformation::Transformation::getInstance(MAX_GRID_SIZE_X, MAX_GRID_SIZE_Y);
     std::vector<uchar> hsv_flat;
-    transf.convertImage(num_pixels, data, hsv_flat, width, height, grid_size_x, grid_size_y);
+    transf.convertImage(num_pixels, data, hsv_flat, width, height, grid_size_x, grid_size_y, bbox_startX, bbox_startY, bbox_width, bbox_height);
 
     // Create a new ArrayBuffer to return the HSV data
     auto hsv_buffer = ArrayBuffer::New(isolate, hsv_flat.size());

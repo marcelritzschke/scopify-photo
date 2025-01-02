@@ -196,7 +196,17 @@ namespace transformation
     cv::merge(std::vector<cv::Mat>{avgH, avgS, avgV}, hsv_grid);
   }
 
-  void Transformation::convertImage(int num_pixels, uint8_t *data, std::vector<uchar> &dst, int width, int height, int target_width, int target_height, bool use_lut)
+  void Transformation::convertImage(int num_pixels,
+                                    uint8_t *data, std::vector<uchar> &dst,
+                                    int width,
+                                    int height,
+                                    int target_width,
+                                    int target_height,
+                                    int bbox_startX,
+                                    int bbox_startY,
+                                    int bbox_width,
+                                    int bbox_height,
+                                    bool use_lut)
   {
     PERF_MARK("Convert Image Start");
 
@@ -213,12 +223,25 @@ namespace transformation
 
     /*************************************************************************
      *
+     * Crop the image
+     *
+     *************************************************************************/
+    cv::Rect rgba_roi(bbox_startY, bbox_startX, bbox_height, bbox_width);
+    cv::Mat cropped_image = rgba_image(rgba_roi);
+#ifdef __LOG
+    logMat<cv::Vec4b>(std::string("Cropped Image"), cropped_image);
+#endif
+    PERF_MARK("Cropped Image");
+
+    /*************************************************************************
+     *
      * Optional Downsampling if pixel count > MAX_PIXEL_COUNT
      *
      *************************************************************************/
-    float factor = std::min(1.f, sqrtf(static_cast<float>(MAX_PIXEL_COUNT) / num_pixels));
+    std::cout << cropped_image.rows << " " << cropped_image.cols << " " << cropped_image.total() << std::endl;
+    float factor = std::min(1.f, sqrtf(static_cast<float>(MAX_PIXEL_COUNT) / cropped_image.total()));
     cv::Mat rgba_downsampled_image;
-    cv::resize(rgba_image, rgba_downsampled_image, cv::Size(), factor, factor, cv::INTER_AREA);
+    cv::resize(cropped_image, rgba_downsampled_image, cv::Size(), factor, factor, cv::INTER_AREA);
 
 #ifdef __LOG
     logMat<cv::Vec4b>(std::string("RGBA Downsampled Image"), rgba_downsampled_image);

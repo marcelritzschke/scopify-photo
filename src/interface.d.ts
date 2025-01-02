@@ -1,5 +1,8 @@
+import { BoundingBox } from "./types/types";
+
 export interface IElectronAPI {
   getCaptureId: () => Promise<string | null>;
+  getNormalizedBoundingBox: () => Promise<BoundingBox | null>;
   getBitmapHsv: () => Promise<{
     data: Uint8ClampedArray | null;
     width: number;
@@ -16,6 +19,7 @@ export interface IElectronAPI {
     target_height: number,
   ) => Promise<void>;
   setCaptureId: (id: string) => Promise<void>;
+  setNormalizedBoundingBox: (boundingBox: BoundingBox | null) => Promise<void>;
   terminateImageConvert: () => Promise<void>;
   triggerImageConvert: () => Promise<void>;
   minimizeWindow: () => Promise<void>;

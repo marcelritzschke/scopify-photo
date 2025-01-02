@@ -5,9 +5,12 @@ import * as THREE from "three";
 import { vertex, fragment } from "@/lib/shader/huering.glsl.js";
 
 const VectorScope: React.FC = () => {
-  const { bitmap } = useContext(AppContext);
+  const { bitmap, fontSize, navBarHeight } = useContext(AppContext);
 
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth); // 5px margin
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [windowHeight, setWindowHeight] = useState(
+    window.innerHeight - navBarHeight,
+  );
   const [hsvGrid, setHsvGrid] = useState<Uint8ClampedArray>();
   const [hsvGridWidth, setHsvGridWidth] = useState<number>();
   const [hsvGridHeight, setHsvGridHeight] = useState<number>();
@@ -18,6 +21,7 @@ const VectorScope: React.FC = () => {
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
+      setWindowHeight(window.innerHeight - navBarHeight);
     };
 
     window.addEventListener("resize", handleResize);
@@ -34,8 +38,11 @@ const VectorScope: React.FC = () => {
       };
       fetchImageDataFromMain();
 
+      console.log("windowWidth", windowWidth);
+      console.log("hsvWidth", hsvGridWidth);
+
       if (hsvGrid && hsvGridWidth && hsvGridHeight) {
-        compileShader(hsvGridWidth, hsvGridHeight);
+        compileShader(1.02 * hsvGridWidth, 1.02 * hsvGridHeight); // We make it a little bigger since the circle outer edge is smoothed out
         drawCoordinateSystem(hsvGridWidth, hsvGridHeight, 0);
 
         const canvas: HTMLCanvasElement = canvasRef.current;
@@ -52,6 +59,12 @@ const VectorScope: React.FC = () => {
         const img = ctx.createImageData(canvas.width, canvas.height);
         img.data.set(hsvGrid);
         ctx.putImageData(img, 0, 0);
+
+        // compensate the bigger shader
+        document.getElementById("canvasCosy").style.left =
+          Math.floor(0.01 * hsvGridWidth).toString() + "px";
+        document.getElementById("canvasCosy").style.top =
+          Math.floor(0.01 * hsvGridWidth).toString() + "px";
       }
     }
   }, [bitmap]);
@@ -77,8 +90,18 @@ const VectorScope: React.FC = () => {
       data,
       bitmap.width,
       bitmap.height,
-      windowWidth,
-      windowWidth,
+      Math.min(
+        512,
+        Math.min(windowWidth, windowHeight) -
+          2 * 0.5 * fontSize -
+          0.02 * windowWidth,
+      ),
+      Math.min(
+        512,
+        Math.min(windowWidth, windowHeight) -
+          2 * 0.5 * fontSize -
+          0.02 * windowWidth,
+      ),
     );
 
     const hsvGridStruct = await window.electronAPI.getBitmapHsv();
@@ -101,28 +124,27 @@ const VectorScope: React.FC = () => {
     canvas.width = width;
     canvas.height = height;
 
-    const radius = Math.min(width, height) / 2 - margin - 5;
+    const radius = Math.min(width, height) / 2 - margin;
     const centerX = width / 2;
     const centerY = height / 2;
 
     // Clear the canvas
     ctx.clearRect(0, 0, width, height);
 
+    console.log("drawCosy", width, height, radius, centerX, centerY);
+
     // Draw grid circles
-    // ctx.strokeStyle = "#ccc";
-    // ctx.lineWidth = 1;
-    // for (let i = 1; i <= 5; i++) {
-    //   ctx.beginPath();
-    //   ctx.arc(centerX, centerY, (i / 5) * radius, 0, 2 * Math.PI);
-    //   ctx.stroke();
-    // }
+    ctx.strokeStyle = "#ccc";
+    ctx.lineWidth = 1;
+    for (let i = 1; i <= 4; i++) {
+      if (i == 4) break;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, (i / 4) * radius, 0, 2 * Math.PI);
+      ctx.stroke();
+    }
 
     // Draw lines for color directions
-    const colors = ["blue", "cyan", "green", "yellow", "red", "magenta"];
-    const angleStep = (2 * Math.PI) / colors.length;
-
-    colors.forEach((color, i) => {
-      const angle = i * angleStep; // + (240.0 * Math.PI) / 180.0
+    const drawColorLine = (color: string, angle: number) => {
       const x = centerX + radius * Math.cos(angle);
       const y = centerY + radius * Math.sin(angle);
 
@@ -132,7 +154,17 @@ const VectorScope: React.FC = () => {
       ctx.moveTo(centerX, centerY);
       ctx.lineTo(x, y);
       ctx.stroke();
+    };
+
+    const colors = ["blue", "cyan", "green", "yellow", "red", "magenta"];
+    const angleStep = (2 * Math.PI) / colors.length;
+    colors.forEach((color, i) => {
+      const angle = i * angleStep;
+      // drawColorLine(color, angle);
     });
+
+    // Draw skin tone
+    drawColorLine("white", ((240 - 11) * Math.PI) / 180);
   };
 
   const compileShader = (width: number, height: number) => {
@@ -169,8 +201,8 @@ const VectorScope: React.FC = () => {
   return (
     <div className="relative -z-20">
       <canvas ref={canvasShaderRef} />
-      <div className="absolute inset-0 -z-10">
-        <canvas ref={canvasCosyRef} className="border-2 border-blue-950" />
+      <div id="canvasCosy" className="absolute inset-0 -z-10">
+        <canvas ref={canvasCosyRef} />
         <div className="absolute inset-0 -z-0">
           <canvas ref={canvasRef} />
         </div>

@@ -6,9 +6,13 @@ export const AppContext = createContext<{
   appState: VideoSelectionModalState;
   requestAppStateTransition: (newState: VideoSelectionModalState) => void;
   bitmap: ImageBitmap;
+  fontSize: number;
+  navBarHeight: number;
 }>({
   isDev: false,
   appState: VideoSelectionModalState.Closed,
   requestAppStateTransition: (_) => {},
   bitmap: null,
+  fontSize: 16,
+  navBarHeight: 29,
 });

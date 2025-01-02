@@ -2,10 +2,12 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
 import { contextBridge, ipcRenderer } from "electron";
+import { BoundingBox } from "./types/types";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   getCaptureId: () => ipcRenderer.invoke("video:getCaptureId"),
   getBitmapHsv: () => ipcRenderer.invoke("imageconvert:getHsv"),
+  getNormalizedBoundingBox: () => ipcRenderer.invoke("get-boundingbox"),
   getDesktopSources: (opts: Electron.SourcesOptions) =>
     ipcRenderer.invoke("desktopcapturer:getSources", opts),
   setBitmap: (
@@ -26,6 +28,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   terminateImageConvert: () => ipcRenderer.send("imageconvert:terminate"),
   triggerImageConvert: () => ipcRenderer.send("imageconvert:trigger"),
   setCaptureId: (id: string) => ipcRenderer.send("set-captureid", id),
+  setNormalizedBoundingBox: (boundingBox: BoundingBox) =>
+    ipcRenderer.send("set-boundingbox", boundingBox),
   minimizeWindow: () => ipcRenderer.send("title-bar:minimize-window"),
   maximizeWindow: () => ipcRenderer.send("title-bar:maximize-window"),
   createAboutWindow: () => ipcRenderer.send("title-bar:create-about-window"),
