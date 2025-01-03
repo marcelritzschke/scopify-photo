@@ -66,7 +66,7 @@ const VideoSelectionModal: React.FC<VideoSelectionModalProps> = ({
               Screen Capture
             </DialogTitle>
             <p className="mt-2 px-1 text-center text-sm/6 text-white/75">
-              Select the screen or application which will be live captured.
+              Select the application or screen that will be live captured.
             </p>
             <MainView />
             <div className="mr-2 flex items-center justify-end">

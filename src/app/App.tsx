@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import Navbar from "@/app/components/navigation/Navbar";
-import { AppContext } from "./AppContext";
+import { AppContext } from "@/app/AppContext";
 import { VideoSelectionModalState } from "@/types/enums";
 import VideoSelectionModal from "@/app/components/modal/VideoSelectionModal";
 import { getMediaStream } from "@/lib/utils";
-import OffCanvasVideoCrop from "./components/OffCanvasVideoCrop";
-import VectorScope from "./components/video/VectorScope";
+import OffCanvasVideoCrop from "@/app/components/OffCanvasVideoCrop";
+import VectorScope from "@/app/components/scope/VectorScope";
 
 export default function App() {
   const isDev = process.env.NODE_ENV !== "production" ? true : false;

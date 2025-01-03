@@ -2,6 +2,8 @@ import { DesktopSource } from "@/types/types";
 import Spinner from "@/app/components/Spinner";
 import { useEffect, useState } from "react";
 import { fetchDesktopSources } from "@/lib/utils";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
+import SourceGridView from "./SourceGridView";
 
 interface VideoSelectionSourceParams {
   onSelected: (id: string) => void;
@@ -22,23 +24,33 @@ const VideoSelectionSource: React.FC<VideoSelectionSourceParams> = ({
   }, []);
 
   if (sources.length) {
+    const appSources = sources.filter((source) => {
+      return source.id.startsWith("window");
+    });
+
+    const screenSources = sources.filter((source) => {
+      return source.id.startsWith("screen");
+    });
+
     return (
-      <div className="mt-4 grid h-96 grid-cols-1 gap-4 overflow-auto px-4 sm:grid-cols-2 [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500 [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 [&::-webkit-scrollbar]:w-2">
-        {sources.map((source, idx) => {
-          return (
-            <div key={idx}>
-              <div className="h-32 w-full overflow-hidden rounded-md bg-white/10">
-                <img
-                  src={source.thumbnail}
-                  className="h-full w-full object-contain hover:border"
-                  onClick={() => onSelected(source.id)}
-                ></img>
-              </div>
-              <span className="text-sm/6 text-white">{source.name}</span>
-            </div>
-          );
-        })}
-      </div>
+      <TabGroup className="my-4">
+        <TabList>
+          <Tab className="ml-4 mr-1 rounded-full px-2 py-1 text-white data-[hover]:bg-white/5 data-[selected]:bg-white/10">
+            Applications
+          </Tab>
+          <Tab className="ml-4 mr-4 rounded-full px-2 py-1 text-white data-[hover]:bg-white/5 data-[selected]:bg-white/10 sm:ml-1">
+            Screens
+          </Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <SourceGridView sources={appSources} onSelected={onSelected} />
+          </TabPanel>
+          <TabPanel>
+            <SourceGridView sources={screenSources} onSelected={onSelected} />
+          </TabPanel>
+        </TabPanels>
+      </TabGroup>
     );
   }
 
