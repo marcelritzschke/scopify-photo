@@ -7,12 +7,6 @@ import { AppContext } from "@/app/AppContext";
 import MenuBar from "./MenuBar";
 
 export default function () {
-  const {
-    isDev,
-    appState,
-    requestAppStateTransition: requestAppStateTransition,
-  } = useContext(AppContext);
-
   const closeWindow = () => {
     window.close();
   };
@@ -28,13 +22,11 @@ export default function () {
   return (
     <>
       <div className="titlebar fixed left-0 top-0 flex w-full justify-between border-b border-slate-700 bg-gray-800 p-0">
-        <div className="titlebar-menu mb-1 ml-1 mt-1 text-left text-white/75">
+        <div className="titlebar-menu z-10 mb-1 ml-1 mt-1 text-left text-white/75">
           <MenuBar />
         </div>
-        <div className="my-1 hidden text-center text-white/75 sm:inline-block">
-          Vector Scope Live
-        </div>
-        <div className="titlebar-menu grid grid-cols-3 items-center text-right text-white/75">
+        <div className="invisible">Placeholder</div>
+        <div className="titlebar-menu z-10 grid grid-cols-3 items-center text-right text-white/75">
           <div
             className="flex h-full w-full justify-center p-0 hover:bg-gray-500/50"
             onClick={minimizeWindow}
@@ -53,6 +45,9 @@ export default function () {
           >
             <FontAwesomeIcon icon={faXmark} className="mx-2 my-auto" />
           </div>
+        </div>
+        <div className="absolute inset-0 my-1 hidden w-full text-center text-white/75 sm:inline-block">
+          Photo.Scopify
         </div>
       </div>
     </>
