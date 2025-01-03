@@ -149,7 +149,7 @@ const VectorScope: React.FC = () => {
       const y = centerY + radius * Math.sin(angle);
 
       ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.moveTo(centerX, centerY);
       ctx.lineTo(x, y);
@@ -160,7 +160,7 @@ const VectorScope: React.FC = () => {
     const angleStep = (2 * Math.PI) / colors.length;
     colors.forEach((color, i) => {
       const angle = i * angleStep;
-      // drawColorLine(color, angle);
+      drawColorLine(color, angle);
     });
 
     // Draw skin tone
@@ -192,10 +192,13 @@ const VectorScope: React.FC = () => {
     renderer.setSize(width, height);
 
     const render = () => {
-      requestAnimationFrame(render);
       renderer.render(scene, camera);
+
+      renderer.dispose();
+      material.dispose();
+      geometry.dispose();
     };
-    render();
+    requestAnimationFrame(render);
   };
 
   return (
