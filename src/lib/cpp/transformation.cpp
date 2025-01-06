@@ -49,7 +49,7 @@ namespace transformation
                                    {
                                     if (rgba_pixel[0] == 0 && rgba_pixel[1] == 0 && rgba_pixel[2] == 0)
                                     {
-                                      rgba_image.at<Pixel_RGBA>(position[0], position[1])[3] = 0.f;
+                                      rgba_image.at<Pixel_RGBA>(position[0], position[1])[3] = 0u;
                                     } });
   }
 
@@ -64,8 +64,8 @@ namespace transformation
                                    float step_size_x = 2.f / _grid_size_x;
                                    float step_size_y = 2.f / _grid_size_y;
 
-                                   float x_coord = step_size_x * (x_idx + 0.5);
-                                   float y_coord = step_size_y * (y_idx + 0.5);
+                                   float x_coord = step_size_x * (x_idx + 0.5f);
+                                   float y_coord = step_size_y * (y_idx + 0.5f);
 
                                    // Transform to center of circle
                                    x_coord -= 1.f;
