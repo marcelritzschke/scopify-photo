@@ -3,7 +3,7 @@ import path from "path";
 
 const createAboutWindow = () => {
   const aboutWindow = new BrowserWindow({
-    title: "About Photo.Scopify",
+    title: "About ScopifyPhoto",
     width: 300,
     height: 300,
     backgroundColor: "white",

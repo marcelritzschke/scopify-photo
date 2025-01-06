@@ -1,6 +1,6 @@
 {
-  "name": "vector-scope-live",
-  "productName": "vector-scope-live",
+  "name": "scopify-photo",
+  "productName": "scopify-photo",
   "version": "0.0.1",
   "description": "My Electron application description",
   "main": ".vite/build/main.js",

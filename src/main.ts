@@ -87,7 +87,7 @@ const triggerImageConvert = async () => {
 const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    title: "Vector Scope Live",
+    title: "ScopifyPhoto",
     frame: false,
     width: isDev ? 550 : 300,
     minWidth: 276,

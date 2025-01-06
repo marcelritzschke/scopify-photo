@@ -45,7 +45,7 @@ export default function () {
           </div>
         </div>
         <div className="absolute inset-0 my-1 hidden w-full text-center text-white/75 sm:inline-block">
-          Photo.Scopify
+          ScopifyPhoto
         </div>
       </div>
     </>
