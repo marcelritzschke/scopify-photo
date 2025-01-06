@@ -2,18 +2,13 @@
 #include <stdexcept>
 #include "transformation.hpp"
 #include "perf.hpp"
-
-#ifdef __LOG
 #include "utils.hpp"
-#endif
 
 namespace transformation
 {
   typedef cv::Vec4b Pixel_RGBA;
   typedef cv::Vec3b Pixel_RGB;
   typedef cv::Point3f Pixel_HSV;
-
-  static std::mutex mutices[256][256] = {}; // TODO: dynamic number of mutices or accept limit
 
   Transformation::Transformation(int grid_size_x, int grid_size_y) : _grid_size_x{grid_size_x}, _grid_size_y{grid_size_y}
   {
@@ -96,12 +91,9 @@ namespace transformation
 
     coordinates[1] *= -1.f; // HTML5 canvas y axis is mirrored
     coordinates = (hs[1] * coordinates + cv::Vec2f(1.f, 1.f)) / 2.f;
-    //  std::cout << "coord = " << coordinates << std::endl;
 
     int x_idx = static_cast<int>(coordinates[1] * _grid_size_x);
     int y_idx = static_cast<int>(coordinates[0] * _grid_size_y);
-
-    //  std::cout << "x_idx = " << x_idx << " y_idx = " << y_idx << std::endl;
 
     x_idx = std::min(x_idx, _grid_size_x - 1);
     y_idx = std::min(y_idx, _grid_size_y - 1);
@@ -111,30 +103,15 @@ namespace transformation
 
   void Transformation::getHSPopulation(const cv::Mat &hsv_image, cv::Mat &hs_grid)
   {
-    std::atomic<bool> hs_population[MAX_GRID_SIZE_X][MAX_GRID_SIZE_Y] = {}; // TODO: dynamic number of mutices or accept limit
+    std::atomic<bool> hs_population[MAX_GRID_SIZE_X][MAX_GRID_SIZE_Y] = {}; // TODO: dynamic number of atomics or accept limit
     hs_grid = cv::Mat::zeros(_hs_lut.rows, _hs_lut.cols, CV_32FC3);
-
-    // std::cout << "hsv_image" << std::endl
-    //           << hsv_image << std::endl;
 
     hsv_image.forEach<Pixel_HSV>([&](Pixel_HSV &pixel, const int *position) -> void
                                  {
-                                   // std::cout << "gridsize = (" << _grid_size_x << ", " << _grid_size_y << ")" << std::endl;
-                                   // std::cout << "pixel = (" << pixel.x << ", " << pixel.y << ", " << pixel.z << ")" << std::endl;
                                    cv::Vec2f hs(pixel.x, pixel.y);
                                    cv::Vec2i xy = hs2xy(hs);
 
-                                   // std::cout << "x=" << pixel.x << " y=" << pixel.y << " z=" << pixel.z << std::endl;
                                    hs_population[xy[0]][xy[1]].store(true); });
-
-    // for (size_t i = 0; i < _grid_size_y; i++)
-    // {
-    //   for (size_t j = 0; j < _grid_size_x; j++)
-    //   {
-    //     std::cout << hs_population[i][j] << " ";
-    //   }
-    //   std::cout << std::endl;
-    // }
 
     _hs_lut.forEach<cv::Point2f>([&](cv::Point2f &hs_value, const int *position) -> void
                                  {
@@ -157,6 +134,7 @@ namespace transformation
                                  });
   }
 
+#if 0
   void Transformation::gridBinning(const cv::Mat &hsv_image, cv::Mat &hsv_grid)
   {
     cv::Mat sumH = cv::Mat::zeros(_grid_size_x, _grid_size_y, CV_32F);
@@ -195,6 +173,18 @@ namespace transformation
 
     cv::merge(std::vector<cv::Mat>{avgH, avgS, avgV}, hsv_grid);
   }
+#endif
+
+  void Transformation::cropImage(const cv::Mat &inp_image,
+                                 cv::Mat &out_image,
+                                 int bbox_startX,
+                                 int bbox_startY,
+                                 int bbox_width,
+                                 int bbox_height)
+  {
+    cv::Rect rgba_roi(bbox_startX, bbox_startY, bbox_width, bbox_height);
+    out_image = std::move(inp_image(std::move(rgba_roi)));
+  }
 
   void Transformation::convertImage(int num_pixels,
                                     uint8_t *data, std::vector<uchar> &dst,
@@ -208,6 +198,7 @@ namespace transformation
                                     int bbox_height,
                                     bool use_lut)
   {
+    LOG_RESET;
     PERF_MARK("Convert Image Start");
 
     /*************************************************************************
@@ -215,10 +206,8 @@ namespace transformation
      * Create an OpenCV Mat from the RGBA data
      *
      *************************************************************************/
-    cv::Mat rgba_image(width, height, CV_8UC4, data);
-#ifdef __LOG
-    logMat<cv::Vec4b>(std::string("RGBA Image"), rgba_image);
-#endif
+    cv::Mat rgba_image(height, width, CV_8UC4, data);
+    LOG_MAT(std::string("RGBA Image"), rgba_image);
     PERF_MARK("RGBA Image");
 
     /*************************************************************************
@@ -226,11 +215,9 @@ namespace transformation
      * Crop the image
      *
      *************************************************************************/
-    cv::Rect rgba_roi(bbox_startY, bbox_startX, bbox_height, bbox_width);
-    cv::Mat cropped_image = rgba_image(rgba_roi);
-#ifdef __LOG
-    logMat<cv::Vec4b>(std::string("Cropped Image"), cropped_image);
-#endif
+    cv::Mat cropped_image;
+    cropImage(rgba_image, cropped_image, bbox_startX, bbox_startY, bbox_width, bbox_height);
+    LOG_MAT(std::string("Cropped Image"), cropped_image);
     PERF_MARK("Cropped Image");
 
     /*************************************************************************
@@ -238,14 +225,11 @@ namespace transformation
      * Optional Downsampling if pixel count > MAX_PIXEL_COUNT
      *
      *************************************************************************/
-    std::cout << cropped_image.rows << " " << cropped_image.cols << " " << cropped_image.total() << std::endl;
     float factor = std::min(1.f, sqrtf(static_cast<float>(MAX_PIXEL_COUNT) / cropped_image.total()));
     cv::Mat rgba_downsampled_image;
     cv::resize(cropped_image, rgba_downsampled_image, cv::Size(), factor, factor, cv::INTER_AREA);
 
-#ifdef __LOG
-    logMat<cv::Vec4b>(std::string("RGBA Downsampled Image"), rgba_downsampled_image);
-#endif
+    LOG_MAT(std::string("RGBA Downsampled Image"), rgba_downsampled_image);
     PERF_MARK("RGBA Downsampled Image");
 
     /*************************************************************************
@@ -255,9 +239,7 @@ namespace transformation
      *************************************************************************/
     cv::Mat rgb_image;
     cv::cvtColor(rgba_downsampled_image, rgb_image, cv::COLOR_RGBA2RGB);
-#ifdef __LOG
-    logMat<cv::Vec3b>(std::string("rgb_image"), rgb_image);
-#endif
+    LOG_MAT(std::string("rgb_image"), rgb_image);
     PERF_MARK("rgb_image");
 
     /*************************************************************************
@@ -267,9 +249,7 @@ namespace transformation
      *************************************************************************/
     cv::Mat normalized_image;
     rgb_image.convertTo(normalized_image, CV_32F, 1.0 / 255.0);
-#ifdef __LOG
-    logMat<cv::Vec3f>(std::string("normalized_image"), normalized_image);
-#endif
+    LOG_MAT(std::string("normalized_image"), normalized_image);
     PERF_MARK("normalized_image");
 
     /*************************************************************************
@@ -281,9 +261,7 @@ namespace transformation
      *************************************************************************/
     cv::Mat hsv_image;
     cv::cvtColor(normalized_image, hsv_image, cv::COLOR_RGB2HSV_FULL);
-#ifdef __LOG
-    logMat<cv::Vec3f>(std::string("hsv_image"), hsv_image);
-#endif
+    LOG_MAT(std::string("hsv_image"), hsv_image);
     PERF_MARK("hsv_image");
 
     /*************************************************************************
@@ -294,30 +272,28 @@ namespace transformation
      *
      *************************************************************************/
     cv::Mat hsv_grid;
-    if (use_lut)
+    if (1 /*use_lut*/)
     {
       getHSPopulation(hsv_image, hsv_grid);
     }
     else
     {
+#if 0
       gridBinning(hsv_image, hsv_grid);
+#endif
     }
     hsv_grid.convertTo(hsv_grid, CV_8UC3, 255);
-#ifdef __LOG
-    logMat<cv::Vec3b>(std::string("hsv_grid"), hsv_grid);
-#endif
+    LOG_MAT(std::string("hsv_grid"), hsv_grid);
     PERF_MARK("hsv_grid");
 
     /*************************************************************************
      *
-     * Convert pixels back to RGBA
+     * Convert pixels back to RGB
      *
      *************************************************************************/
     cv::Mat rgb_image_post;
     cv::cvtColor(hsv_grid, rgb_image_post, cv::COLOR_HSV2RGB);
-#ifdef __LOG
-    logMat<cv::Vec3b>(std::string("rgb_image_post"), rgb_image_post);
-#endif
+    LOG_MAT(std::string("rgb_image_post"), rgb_image_post);
     PERF_MARK("rgb_image_post");
 
     /*************************************************************************
@@ -327,15 +303,11 @@ namespace transformation
      *************************************************************************/
     cv::Mat rgb_with_alpha;
     cv::cvtColor(rgb_image_post, rgb_with_alpha, cv::COLOR_RGB2RGBA);
-#ifdef __LOG
-    logMat<cv::Vec4b>(std::string("rgb_with_alpha"), rgb_with_alpha);
-#endif
+    LOG_MAT(std::string("rgb_with_alpha"), rgb_with_alpha);
     PERF_MARK("rgb_with_alpha");
 
     makeTransparent(rgb_with_alpha);
-#ifdef __LOG
-    logMat<cv::Vec4b>(std::string("rgb_with_alpha_transparent"), rgb_with_alpha);
-#endif
+    LOG_MAT(std::string("rgb_with_alpha_transparent"), rgb_with_alpha);
     PERF_MARK("rgb_with_alpha_transparent");
 
     /*************************************************************************
@@ -347,6 +319,7 @@ namespace transformation
     cv::Mat rgba_rotated;
     cv::Mat rot = cv::getRotationMatrix2D(cv::Vec2f(rgb_with_alpha.cols / 2.f, rgb_with_alpha.rows / 2.f), 120, 1.f);
     cv::warpAffine(rgb_with_alpha, rgba_rotated, rot, rgba_rotated.size());
+    LOG_MAT(std::string("rgba_rotated"), rgba_rotated);
     PERF_MARK("rgba_rotated");
 
     /*************************************************************************
@@ -356,6 +329,7 @@ namespace transformation
      *************************************************************************/
     cv::Mat rgba_blurred;
     cv::GaussianBlur(rgba_rotated, rgba_blurred, cv::Size2i(3, 3), 0);
+    LOG_MAT(std::string("rgba_blurred"), rgba_blurred);
     PERF_MARK("rgba_blurred");
 
     /*************************************************************************
@@ -374,6 +348,7 @@ namespace transformation
 
     cv::Mat rgba_scaled;
     cv::resize(rgba_blurred, rgba_scaled, cv::Size(), scale_x, scale_y, interpolation);
+    LOG_MAT(std::string("rgba_scaled"), rgba_scaled);
     PERF_MARK("rgba_scaled");
 
     /*************************************************************************

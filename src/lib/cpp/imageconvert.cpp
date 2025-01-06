@@ -1,4 +1,3 @@
-// imageconvert.cpp
 #include <node.h>
 #include <iostream>
 #include <limits>
@@ -71,8 +70,6 @@ namespace imageconvert
     // Ensure the length is divisible by 4 (RGBA components per pixel)
     if (length % 4 != 0)
     {
-      // isolate->ThrowException(Exception::Error(isolate->GetCurrentContext(),
-      //  String::NewFromUtf8(isolate, "ArrayBuffer size must be a multiple of 3").ToLocalChecked()));
       std::cout << "ArrayBuffer size must be a multiple of 4" << std::endl;
       return;
     }
@@ -106,9 +103,6 @@ namespace imageconvert
       bbox_width = bbox_width_maybe.FromJust();
       bbox_height = bbox_height_maybe.FromJust();
     }
-
-    std::cout << bbox_startX << ", " << bbox_startY << ", " << bbox_width << ", " << bbox_height << std::endl;
-    std::cout << width << ", " << height << std::endl;
 
     auto &transf = transformation::Transformation::getInstance(MAX_GRID_SIZE_X, MAX_GRID_SIZE_Y);
     std::vector<uchar> hsv_flat;

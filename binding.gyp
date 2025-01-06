@@ -34,6 +34,7 @@
         "<(OpenCV_Lib_Dirs)/lib/opencv_world<(OpenCV_Version).lib",
       ],
       "defines": [
+        # "__LOG",
         # "__PERF",
         # "__PERF_VERBOSE",
         ]

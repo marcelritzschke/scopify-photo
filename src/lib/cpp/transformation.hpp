@@ -57,7 +57,15 @@ namespace transformation
         void downSample(const cv::Mat &rgba_image, cv::Mat &rgba_downsampled_image, int factor);
         void makeTransparent(cv::Mat &rgba_image);
         void getHSPopulation(const cv::Mat &hsv_image, cv::Mat &hs_grid);
+        void cropImage(const cv::Mat &inp_image,
+                       cv::Mat &out_image,
+                       int bbox_startX,
+                       int bbox_startY,
+                       int bbox_width,
+                       int bbox_height);
+#if 0
         void gridBinning(const cv::Mat &hsv_image, cv::Mat &hsv_grid);
+#endif
 
         cv::Vec2i hs2xy(cv::Vec2f &hs);
 
@@ -72,6 +80,7 @@ namespace transformation
         FRIEND_TEST(PrepareHSGridTest, TestSimple3);
         FRIEND_TEST(PrepareHSGridTest, TestSimple4);
         FRIEND_TEST(hs2xyTest, TestSimpleWithParams);
+        FRIEND_TEST(CropImageTest, TestSimple);
 #endif
     };
 }
