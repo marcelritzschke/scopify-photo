@@ -37,9 +37,6 @@ const VectorScope: React.FC = () => {
       };
       fetchImageDataFromMain();
 
-      console.log("windowWidth", windowWidth);
-      console.log("hsvWidth", hsvGridWidth);
-
       if (hsvGrid && hsvGridWidth && hsvGridHeight) {
         compileShader(1.02 * hsvGridWidth, 1.02 * hsvGridHeight); // We make it a little bigger since the circle outer edge is smoothed out
         drawCoordinateSystem(hsvGridWidth, hsvGridHeight, 0);
@@ -129,8 +126,6 @@ const VectorScope: React.FC = () => {
 
     // Clear the canvas
     ctx.clearRect(0, 0, width, height);
-
-    console.log("drawCosy", width, height, radius, centerX, centerY);
 
     // Draw grid circles
     ctx.strokeStyle = "#ccc";
