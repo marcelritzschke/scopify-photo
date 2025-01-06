@@ -1,7 +1,7 @@
 import { BoundingBox, DragOffset } from "@/types/types";
 
 const handleSize = 10;
-const cropAreaMinSize = 50;
+const cropAreaMinSize = 1;
 
 export const drawBoundingBox = (
   ctx: CanvasRenderingContext2D | null,
