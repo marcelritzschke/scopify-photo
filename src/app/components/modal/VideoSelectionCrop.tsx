@@ -15,7 +15,7 @@ interface VideoSelectionCropProps {
 }
 
 const VideoSelectionCrop: React.FC<VideoSelectionCropProps> = ({ stream }) => {
-  const { isDev, bitmap } = useContext(AppContext);
+  const { isDev } = useContext(AppContext);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);

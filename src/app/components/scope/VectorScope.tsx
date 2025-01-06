@@ -1,7 +1,6 @@
 import { AppContext } from "@/app/AppContext";
 import { useContext, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-// @ts-ignore
 import { vertex, fragment } from "@/lib/shader/huering.glsl.js";
 
 const VectorScope: React.FC = () => {

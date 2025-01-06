@@ -1,11 +1,12 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { MenuItem } from "@headlessui/react";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons/faChevronRight";
+import { SyntheticEvent } from "react";
 
 const MenuItemComponent: React.FC<{
   label: string;
   shortcut?: string;
-  callback?: (e?: any) => void;
+  callback?: (e?: SyntheticEvent) => void;
 }> = ({ label, shortcut, callback }) => {
   return (
     <MenuItem>

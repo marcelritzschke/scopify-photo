@@ -2,8 +2,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
 import { faWindowMinimize } from "@fortawesome/free-solid-svg-icons/faWindowMinimize";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons/faWindowMaximize";
-import { useContext } from "react";
-import { AppContext } from "@/app/AppContext";
 import MenuBar from "./MenuBar";
 
 export default function () {

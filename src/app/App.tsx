@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Navbar from "@/app/components/navigation/Navbar";
 import { AppContext } from "@/app/AppContext";
 import { VideoSelectionModalState } from "@/types/enums";
@@ -23,7 +23,7 @@ export default function App() {
     isDev && console.log(`Switching App State from ${appState} to ${newState}`);
 
     switch (newState) {
-      case VideoSelectionModalState.Selecting:
+      case VideoSelectionModalState.Selecting: {
         setAppState(newState);
 
         setStream(null);
@@ -32,20 +32,23 @@ export default function App() {
         await window.electronAPI.setNormalizedBoundingBox(null);
         await window.electronAPI.terminateImageConvert();
         break;
-      case VideoSelectionModalState.Cropping:
+      }
+      case VideoSelectionModalState.Cropping: {
         setAppState(newState);
 
         const streamLocal = await getMediaStream();
         setStream(streamLocal);
         setImageCapture(new ImageCapture(streamLocal.getVideoTracks()[0]));
         break;
-      case VideoSelectionModalState.Closed:
+      }
+      case VideoSelectionModalState.Closed: {
         setAppState(newState);
 
         setImageCaptureInterval();
         await window.electronAPI.triggerImageConvert();
         break;
-      case VideoSelectionModalState.Cancelled:
+      }
+      case VideoSelectionModalState.Cancelled: {
         setStream(null);
         setBitmap(null);
         clearInterval(interval);
@@ -54,6 +57,7 @@ export default function App() {
 
         setAppState(VideoSelectionModalState.Closed);
         break;
+      }
     }
   };
 

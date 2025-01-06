@@ -7,7 +7,7 @@ const NextButton: React.FC<{
 }> = ({ state, transition }) => {
   let ret = <></>;
   switch (state) {
-    case VideoSelectionModalState.Selecting:
+    case VideoSelectionModalState.Selecting: {
       ret = (
         <Button
           disabled
@@ -17,7 +17,8 @@ const NextButton: React.FC<{
         </Button>
       );
       break;
-    case VideoSelectionModalState.Cropping:
+    }
+    case VideoSelectionModalState.Cropping: {
       ret = (
         <Button
           className="ml-2 mt-2 inline-flex cursor-pointer items-center gap-2 rounded-md bg-gray-700 px-3 py-1.5 text-white focus:outline-none"
@@ -28,6 +29,8 @@ const NextButton: React.FC<{
           Finish
         </Button>
       );
+      break;
+    }
     default:
       break;
   }

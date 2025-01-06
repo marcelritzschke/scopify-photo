@@ -11,7 +11,7 @@ export const AppContext = createContext<{
 }>({
   isDev: false,
   appState: VideoSelectionModalState.Closed,
-  requestAppStateTransition: (_) => {},
+  requestAppStateTransition: null,
   bitmap: null,
   fontSize: 16,
   navBarHeight: 29,

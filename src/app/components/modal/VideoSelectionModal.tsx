@@ -5,7 +5,7 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 import VideoSelectionSource from "@/app/components/modal/VideoSelectionSource";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import VideoSelectionCrop from "@/app/components/modal/VideoSelectionCrop";
 import NextButton from "@/app/components/modal/NextButton";
 import { VideoSelectionModalState } from "@/types/enums";

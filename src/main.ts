@@ -56,7 +56,7 @@ const handleSetBitmap = (
   });
 };
 
-const triggerImageConvert = async (_: Electron.IpcMainInvokeEvent) => {
+const triggerImageConvert = async () => {
   let pathToWorker = null;
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     pathToWorker = path.join(__dirname, "../../src/worker.js");

@@ -1,6 +1,6 @@
 import { Menu, MenuButton, MenuItems, MenuSeparator } from "@headlessui/react";
 import MenuItemComponent from "./MenuItemComponent";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AppContext } from "@/app/AppContext";
 import { VideoSelectionModalState } from "@/types/enums";
 import { faBars } from "@fortawesome/free-solid-svg-icons/faBars";
@@ -13,7 +13,7 @@ const MenuBar = () => {
   const [isSubOpen, setIsSubOpen] = useState<number>(-1);
 
   useEffect(() => {
-    const handleWindowClick = (e: MouseEvent) => {
+    const handleWindowClick = (e: PointerEvent) => {
       if (!e.target.closest(".collapsed-menu-items")) {
         setIsSubOpen(-1);
       }
