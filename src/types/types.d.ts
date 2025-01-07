@@ -31,3 +31,9 @@ export interface Item {
   callback?: () => void;
   submenu?: Item[];
 }
+
+export interface Preferences {
+  skinColorLine: number;
+  alwaysOnTop: boolean;
+  blurVectorScope: boolean;
+}

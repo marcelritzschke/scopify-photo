@@ -7,10 +7,11 @@ import {
   session,
 } from "electron";
 import path from "path";
+import fs from "fs";
 import started from "electron-squirrel-startup";
 import createAboutWindow from "./about";
 import { Worker } from "worker_threads";
-import { BoundingBox } from "./types/types";
+import { BoundingBox, Preferences } from "./types/types";
 
 const isDev = !app.isPackaged;
 const isMac = process.platform === "darwin";
@@ -27,6 +28,51 @@ let bitmapHsvGlobal: Uint8ClampedArray;
 let bitmapWidth: number;
 let bitmapHeight: number;
 let normalizedBoundingBox: BoundingBox;
+let appPreferences: Preferences;
+
+const loadPreferences = () => {
+  try {
+    const filePath = path.join(app.getPath("userData"), "preferences.json");
+    const data = fs.readFileSync(filePath);
+
+    appPreferences = JSON.parse(data as unknown as string);
+  } catch (err) {
+    console.error("Error reading file:", err);
+
+    appPreferences = {
+      alwaysOnTop: true,
+      blurVectorScope: false,
+      skinColorLine: 11,
+    };
+  }
+};
+
+const updateMainPreferences = () => {
+  mainWindow.setAlwaysOnTop(appPreferences.alwaysOnTop);
+
+  if (worker) {
+    worker.postMessage({
+      type: "updatePreferences",
+      args: {
+        use_blur: appPreferences.blurVectorScope,
+      },
+    });
+  }
+};
+
+const savePreferences = (preferences: Preferences) => {
+  appPreferences = preferences;
+
+  updateMainPreferences();
+
+  const jsonString = JSON.stringify(preferences, null, 2);
+  const filePath = path.join(app.getPath("userData"), "preferences.json");
+  fs.writeFile(filePath, jsonString, (err) => {
+    if (err) {
+      console.error("Error saving JSON file:", err);
+    }
+  });
+};
 
 const handleSetCaptureId = (
   _: Electron.IpcMainInvokeEvent,
@@ -45,15 +91,19 @@ const handleSetBitmap = (
 ) => {
   try {
     worker.postMessage({
-      bitmap: bitmap,
-      width: width,
-      height: height,
-      target_width: target_width,
-      target_height: target_height,
-      bbox_startX: (normalizedBoundingBox?.startX ?? 0) * width,
-      bbox_startY: (normalizedBoundingBox?.startY ?? 0) * height,
-      bbox_width: (normalizedBoundingBox?.width ?? 1) * width,
-      bbox_height: (normalizedBoundingBox?.height ?? 1) * height,
+      type: "rgbToHsv",
+      args: {
+        bitmap: bitmap,
+        width: width,
+        height: height,
+        target_width: target_width,
+        target_height: target_height,
+        bbox_startX: (normalizedBoundingBox?.startX ?? 0) * width,
+        bbox_startY: (normalizedBoundingBox?.startY ?? 0) * height,
+        bbox_width: (normalizedBoundingBox?.width ?? 1) * width,
+        bbox_height: (normalizedBoundingBox?.height ?? 1) * height,
+        use_blur: appPreferences.blurVectorScope,
+      },
     });
   } catch (e) {
     app.exit(1);
@@ -98,7 +148,7 @@ const createWindow = () => {
     minHeight: 276,
     height: 330,
     backgroundColor: "black",
-    alwaysOnTop: true,
+    alwaysOnTop: appPreferences.alwaysOnTop,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: true,
@@ -178,6 +228,13 @@ app.on("ready", () => {
     normalizedBoundingBox = boundingBox;
   });
 
+  ipcMain.on("save-preferences", (_, preferences: Preferences) => {
+    savePreferences(preferences);
+  });
+  ipcMain.handle("load-preferences", () => {
+    return appPreferences;
+  });
+
   ipcMain.handle("is-dev", () => {
     return isDev;
   });
@@ -207,6 +264,7 @@ app.on("ready", () => {
     return { data: bitmapHsvGlobal, width: bitmapWidth, height: bitmapHeight };
   });
 
+  loadPreferences();
   createWindow();
 });
 

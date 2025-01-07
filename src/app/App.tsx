@@ -6,8 +6,10 @@ import VideoSelectionModal from "@/app/components/modal/VideoSelectionModal";
 import { getMediaStream } from "@/lib/utils";
 import OffCanvasVideoCrop from "@/app/components/OffCanvasVideoCrop";
 import VectorScope from "@/app/components/scope/VectorScope";
+import PreferencesModal from "./components/modal/PreferencesModal";
 
 export default function App() {
+  const [isPreferencesOpen, setIsPreferencesOpen] = useState<boolean>(false);
   const [appState, setAppState] = useState<VideoSelectionModalState>(
     VideoSelectionModalState.Closed,
   );
@@ -18,10 +20,10 @@ export default function App() {
   const [interval, setCaptureInterval] = useState<NodeJS.Timeout>();
 
   useEffect(() => {
-    const getIsDev = async () => {
+    const getContextFromMain = async () => {
       setIsDev(await window.electronAPI.isDev());
     };
-    getIsDev();
+    getContextFromMain();
   }, []);
 
   const requestAppStateTransition = async (
@@ -88,6 +90,8 @@ export default function App() {
         isDev: isDev,
         appState: appState,
         requestAppStateTransition: requestAppStateTransition,
+        isPreferencesOpen: isPreferencesOpen,
+        setIsPreferencesOpen: setIsPreferencesOpen,
         bitmap: bitmap,
         fontSize: parseFloat(
           getComputedStyle(document.documentElement).fontSize,
@@ -97,16 +101,16 @@ export default function App() {
     >
       <Navbar />
       <div className="m-2 mt-[calc(29px+0.5rem)]">
-        {appState === VideoSelectionModalState.Closed && (
+        {appState === VideoSelectionModalState.Closed ? (
           <>
             <OffCanvasVideoCrop stream={stream} />
             <VectorScope />
           </>
-        )}
-        {appState !== VideoSelectionModalState.Closed && (
+        ) : (
           <VideoSelectionModal stream={stream} />
         )}
       </div>
+      {isPreferencesOpen && <PreferencesModal />}
     </AppContext.Provider>
   );
 }

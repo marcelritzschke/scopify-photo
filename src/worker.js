@@ -2,36 +2,31 @@ const { parentPort, workerData } = require("worker_threads");
 const addon = require(workerData.addonPath);
 
 parentPort.on("message", (msg) => {
-  const {
-    bitmap,
-    width,
-    height,
-    target_width,
-    target_height,
-    bbox_startX,
-    bbox_startY,
-    bbox_width,
-    bbox_height,
-  } = msg;
+  if (msg.type === "rgbToHsv") {
+    if (msg.args.bitmap) {
+      const hsvData = new Uint8ClampedArray(
+        addon.rgbToHsv(
+          msg.args.bitmap.buffer,
+          msg.args.width,
+          msg.args.height,
+          msg.args.target_width,
+          msg.args.target_height,
+          msg.args.bbox_startX,
+          msg.args.bbox_startY,
+          msg.args.bbox_width,
+          msg.args.bbox_height,
+          msg.args.use_blur,
+        ),
+      );
+      parentPort.postMessage({
+        data: hsvData,
+        width: msg.args.target_width,
+        height: msg.args.target_height,
+      });
+    }
+  }
 
-  if (bitmap) {
-    const hsvData = new Uint8ClampedArray(
-      addon.rgbToHsv(
-        bitmap.buffer,
-        width,
-        height,
-        target_width,
-        target_height,
-        bbox_startX,
-        bbox_startY,
-        bbox_width,
-        bbox_height,
-      ),
-    );
-    parentPort.postMessage({
-      data: hsvData,
-      width: target_width,
-      height: target_height,
-    });
+  if (msg.type === "updatePreferences") {
+    addon.updatePreferences(msg.args.use_blur);
   }
 });

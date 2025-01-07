@@ -1,4 +1,4 @@
-import { BoundingBox } from "./types/types";
+import { BoundingBox, Preferences } from "./types/types";
 
 export interface IElectronAPI {
   isDev: () => Promise<boolean>;
@@ -12,6 +12,10 @@ export interface IElectronAPI {
   getDesktopSources: (
     opts: Electron.SourcesOptions,
   ) => Promise<DesktopSource[]>;
+
+  loadPreferences: () => Promise<Preferences>;
+  savePreferences: (preferences: Preferences) => Promise<void>;
+
   setBitmap: (
     bitmap: Uint8ClampedArray<ArrayBufferLike>,
     width: number,

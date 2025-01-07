@@ -2,7 +2,7 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
 import { contextBridge, ipcRenderer } from "electron";
-import { BoundingBox } from "./types/types";
+import { BoundingBox, Preferences } from "./types/types";
 
 contextBridge.exposeInMainWorld("electronAPI", {
   isDev: () => ipcRenderer.invoke("is-dev"),
@@ -11,6 +11,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getNormalizedBoundingBox: () => ipcRenderer.invoke("get-boundingbox"),
   getDesktopSources: (opts: Electron.SourcesOptions) =>
     ipcRenderer.invoke("desktopcapturer:getSources", opts),
+
+  loadPreferences: () => ipcRenderer.invoke("load-preferences"),
+  savePreferences: (preferences: Preferences) =>
+    ipcRenderer.send("save-preferences", preferences),
+
   setBitmap: (
     bitmap: Uint8ClampedArray<ArrayBufferLike>,
     width: number,

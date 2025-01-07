@@ -9,7 +9,8 @@ import { SubMenu } from "@/types/types";
 import SubMenuComponent from "./SubMenuComponent";
 
 const MenuBar = () => {
-  const { isDev, requestAppStateTransition } = useContext(AppContext);
+  const { isDev, requestAppStateTransition, setIsPreferencesOpen } =
+    useContext(AppContext);
   const [isSubOpen, setIsSubOpen] = useState<number>(-1);
 
   useEffect(() => {
@@ -39,6 +40,11 @@ const MenuBar = () => {
           type: "button",
           label: "Select Input",
           callback: openVideoSelection,
+        },
+        {
+          type: "button",
+          label: "Preferences",
+          callback: () => setIsPreferencesOpen(true),
         },
         {
           type: "button",
