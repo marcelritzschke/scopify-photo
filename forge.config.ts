@@ -25,11 +25,13 @@ const findOpenCvDll = () => {
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    executableName: "ScopifyPhoto",
     extraResource: [
       join(releaseFolder, "imageconvert.node"),
       ...findOpenCvDll(),
       "./src/worker.js",
     ],
+    prune: true,
   },
   rebuildConfig: {},
   makers: [
