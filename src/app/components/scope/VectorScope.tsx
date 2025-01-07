@@ -13,6 +13,7 @@ const VectorScope: React.FC = () => {
   const [hsvGrid, setHsvGrid] = useState<Uint8ClampedArray>();
   const [hsvGridWidth, setHsvGridWidth] = useState<number>();
   const [hsvGridHeight, setHsvGridHeight] = useState<number>();
+  const [skinColorLine, setSkinColorLine] = useState<number>(11);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasCosyRef = useRef<HTMLCanvasElement>(null);
   const canvasShaderRef = useRef<HTMLCanvasElement>(null);
@@ -33,6 +34,9 @@ const VectorScope: React.FC = () => {
   useEffect(() => {
     if (bitmap) {
       const fetchImageDataFromMain = async () => {
+        await window.electronAPI
+          .loadPreferences()
+          .then((preferences) => setSkinColorLine(preferences.skinColorLine));
         await convertImageBitmapToHsv(bitmap);
       };
       fetchImageDataFromMain();
@@ -158,7 +162,7 @@ const VectorScope: React.FC = () => {
     });
 
     // Draw skin tone
-    drawColorLine("white", ((240 - 11) * Math.PI) / 180);
+    drawColorLine("white", ((240 - skinColorLine) * Math.PI) / 180);
   };
 
   const compileShader = (width: number, height: number) => {
