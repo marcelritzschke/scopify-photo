@@ -328,7 +328,14 @@ namespace transformation
      *
      *************************************************************************/
     cv::Mat rgba_blurred;
-    cv::GaussianBlur(rgba_rotated, rgba_blurred, cv::Size2i(3, 3), 0);
+    if (_use_blur)
+    {
+      cv::GaussianBlur(rgba_rotated, rgba_blurred, cv::Size2i(3, 3), 0);
+    }
+    else
+    {
+      rgba_blurred = std::move(rgba_rotated);
+    }
     LOG_MAT(std::string("rgba_blurred"), rgba_blurred);
     PERF_MARK("rgba_blurred");
 
@@ -358,5 +365,10 @@ namespace transformation
      *************************************************************************/
     dst.insert(dst.begin(), rgba_scaled.datastart, rgba_scaled.dataend);
     PERF_MARK("Convert Image End");
+  }
+
+  void Transformation::useBlur(bool use_blur)
+  {
+    _use_blur = use_blur;
   }
 }

@@ -37,6 +37,8 @@ namespace transformation
                           int bbox_height,
                           bool use_lut = true);
 
+        void useBlur(bool use_blur);
+
     private:
         int _grid_size_x;
         int _grid_size_y;
@@ -45,6 +47,8 @@ namespace transformation
         int _min_grid_size_y = 1;
         int _max_grid_size_x = MAX_GRID_SIZE_X;
         int _max_grid_size_y = MAX_GRID_SIZE_Y;
+
+        bool _use_blur = false;
 
         cv::Mat _hs_lut;
 
