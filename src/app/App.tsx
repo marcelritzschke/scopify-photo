@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "@/app/components/navigation/Navbar";
 import { AppContext } from "@/app/AppContext";
 import { VideoSelectionModalState } from "@/types/enums";
@@ -8,14 +8,21 @@ import OffCanvasVideoCrop from "@/app/components/OffCanvasVideoCrop";
 import VectorScope from "@/app/components/scope/VectorScope";
 
 export default function App() {
-  const isDev = process.env.NODE_ENV !== "production" ? true : false;
   const [appState, setAppState] = useState<VideoSelectionModalState>(
     VideoSelectionModalState.Closed,
   );
+  const [isDev, setIsDev] = useState<boolean>(false);
   const [stream, setStream] = useState<MediaStream>(null);
   const [imageCapture, setImageCapture] = useState<ImageCapture>(null);
   const [bitmap, setBitmap] = useState<ImageBitmap>();
   const [interval, setCaptureInterval] = useState<NodeJS.Timeout>();
+
+  useEffect(() => {
+    const getIsDev = async () => {
+      setIsDev(await window.electronAPI.isDev());
+    };
+    getIsDev();
+  }, []);
 
   const requestAppStateTransition = async (
     newState: VideoSelectionModalState,

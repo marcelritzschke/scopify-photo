@@ -12,7 +12,7 @@ import createAboutWindow from "./about";
 import { Worker } from "worker_threads";
 import { BoundingBox } from "./types/types";
 
-const isDev = process.env.NODE_ENV !== "production" ? true : false;
+const isDev = !app.isPackaged;
 const isMac = process.platform === "darwin";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -169,6 +169,9 @@ app.on("ready", () => {
     normalizedBoundingBox = boundingBox;
   });
 
+  ipcMain.handle("is-dev", () => {
+    return isDev;
+  });
   ipcMain.handle("get-boundingbox", () => {
     return normalizedBoundingBox;
   });

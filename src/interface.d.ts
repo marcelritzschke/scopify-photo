@@ -1,6 +1,7 @@
 import { BoundingBox } from "./types/types";
 
 export interface IElectronAPI {
+  isDev: () => Promise<boolean>;
   getCaptureId: () => Promise<string | null>;
   getNormalizedBoundingBox: () => Promise<BoundingBox | null>;
   getBitmapHsv: () => Promise<{

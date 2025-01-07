@@ -5,6 +5,7 @@ import { contextBridge, ipcRenderer } from "electron";
 import { BoundingBox } from "./types/types";
 
 contextBridge.exposeInMainWorld("electronAPI", {
+  isDev: () => ipcRenderer.invoke("is-dev"),
   getCaptureId: () => ipcRenderer.invoke("video:getCaptureId"),
   getBitmapHsv: () => ipcRenderer.invoke("imageconvert:getHsv"),
   getNormalizedBoundingBox: () => ipcRenderer.invoke("get-boundingbox"),
