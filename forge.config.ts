@@ -28,6 +28,7 @@ const config: ForgeConfig = {
     extraResource: [
       join(releaseFolder, "imageconvert.node"),
       ...findOpenCvDll(),
+      "./src/worker.js",
     ],
   },
   rebuildConfig: {},

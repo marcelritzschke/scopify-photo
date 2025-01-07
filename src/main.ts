@@ -57,23 +57,23 @@ const handleSetBitmap = (
 };
 
 const triggerImageConvert = async () => {
-  let pathToWorker = null;
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    pathToWorker = path.join(__dirname, "../../src/worker.js");
+    const addonPath = path.join(
+      __dirname,
+      "../../build/Release/imageconvert.node",
+    );
+    const pathToWorker = path.join(__dirname, "../../src/worker.js");
+    worker = new Worker(pathToWorker, {
+      workerData: { addonPath: addonPath },
+    });
   } else {
-    pathToWorker = require(path.join(process.resourcesPath, "worker.js"));
+    const addonPath = path.join(process.resourcesPath, "imageconvert.node");
+    const pathToWorker = path.join(process.resourcesPath, "worker.js");
+    worker = new Worker(pathToWorker, {
+      workerData: { addonPath: addonPath },
+    });
   }
 
-  let addonPath: string = null;
-  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    addonPath = path.join(__dirname, "../../build/Release/imageconvert.node");
-  } else {
-    addonPath = path.join(process.resourcesPath, "imageconvert.node");
-  }
-
-  worker = new Worker(pathToWorker, {
-    workerData: { addonPath: addonPath },
-  });
   worker.on("message", (result) => {
     bitmapHsvGlobal = result.data;
     bitmapWidth = result.width;
@@ -100,9 +100,6 @@ const createWindow = () => {
       nodeIntegration: true,
     },
   });
-
-  // console.log(__dirname);
-  // console.log(process.resourcesPath);
 
   session.defaultSession.setDisplayMediaRequestHandler(
     (request, callback) => {
