@@ -43,17 +43,21 @@ const handleSetBitmap = (
   target_width: number,
   target_height: number,
 ) => {
-  worker.postMessage({
-    bitmap: bitmap,
-    width: width,
-    height: height,
-    target_width: target_width,
-    target_height: target_height,
-    bbox_startX: (normalizedBoundingBox?.startX ?? 0) * width,
-    bbox_startY: (normalizedBoundingBox?.startY ?? 0) * height,
-    bbox_width: (normalizedBoundingBox?.width ?? 1) * width,
-    bbox_height: (normalizedBoundingBox?.height ?? 1) * height,
-  });
+  try {
+    worker.postMessage({
+      bitmap: bitmap,
+      width: width,
+      height: height,
+      target_width: target_width,
+      target_height: target_height,
+      bbox_startX: (normalizedBoundingBox?.startX ?? 0) * width,
+      bbox_startY: (normalizedBoundingBox?.startY ?? 0) * height,
+      bbox_width: (normalizedBoundingBox?.width ?? 1) * width,
+      bbox_height: (normalizedBoundingBox?.height ?? 1) * height,
+    });
+  } catch (e) {
+    app.exit(1);
+  }
 };
 
 const triggerImageConvert = async () => {
@@ -99,6 +103,11 @@ const createWindow = () => {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: true,
     },
+  });
+
+  mainWindow.on("ready-to-show", () => {
+    mainWindow.show();
+    mainWindow.removeMenu();
   });
 
   session.defaultSession.setDisplayMediaRequestHandler(
@@ -198,9 +207,14 @@ app.on("ready", () => {
     return { data: bitmapHsvGlobal, width: bitmapWidth, height: bitmapHeight };
   });
 
+  createWindow();
+});
+
+app.on("browser-window-focus", () => {
   globalShortcut.register("CommandOrControl+W", () => {
     BrowserWindow.getFocusedWindow().close();
   });
+
   if (isDev) {
     globalShortcut.register("CommandOrControl+R", () => {
       BrowserWindow.getFocusedWindow().webContents.reload();
@@ -212,8 +226,14 @@ app.on("ready", () => {
       BrowserWindow.getFocusedWindow().webContents.toggleDevTools();
     });
   }
+});
 
-  createWindow();
+app.on("browser-window-blur", () => {
+  globalShortcut.unregisterAll();
+});
+
+app.on("will-quit", () => {
+  globalShortcut.unregisterAll();
 });
 
 app.on("quit", () => {
