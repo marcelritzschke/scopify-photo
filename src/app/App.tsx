@@ -100,17 +100,23 @@ export default function App() {
       }}
     >
       <Navbar />
-      <div className="m-2 mt-[calc(29px+0.5rem)]">
-        {appState === VideoSelectionModalState.Closed ? (
-          <>
-            <OffCanvasVideoCrop stream={stream} />
-            <VectorScope />
-          </>
-        ) : (
-          <VideoSelectionModal stream={stream} />
-        )}
+
+      <div className="w-100 m-2 mt-[calc(29px+0.5rem)] flex justify-center">
+        {appState === VideoSelectionModalState.Closed && <VectorScope />}
       </div>
+
+      {/* VideoCrop Offcanvas Begin */}
+      {appState === VideoSelectionModalState.Closed && (
+        <OffCanvasVideoCrop stream={stream} />
+      )}
+      {/* VideoCrop Offcanvas End */}
+
+      {/* Modals Begin */}
       {isPreferencesOpen && <PreferencesModal />}
+      {appState !== VideoSelectionModalState.Closed && (
+        <VideoSelectionModal stream={stream} />
+      )}
+      {/* Modals End */}
     </AppContext.Provider>
   );
 }
