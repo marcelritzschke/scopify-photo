@@ -39,10 +39,4 @@ declare global {
   interface Window {
     electronAPI: IElectronAPI;
   }
-
-  interface WorkerData {
-    addonPath: string;
-    bitmap: Uint8ClampedArray<SharedArrayBuffer>;
-    result: Uint8ClampedArray<SharedArrayBuffer>;
-  }
 }
