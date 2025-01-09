@@ -32,6 +32,7 @@ const config: ForgeConfig = {
       "./src/worker.js",
     ],
     prune: true,
+    icon: "public/favicon",
   },
   rebuildConfig: {},
   makers: [
