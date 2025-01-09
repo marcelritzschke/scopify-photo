@@ -3,11 +3,13 @@ import path from "path";
 
 const createAboutWindow = () => {
   const aboutWindow = new BrowserWindow({
-    title: "About ScopifyPhoto",
+    title: "About - ScopifyPhoto",
     width: 300,
     height: 300,
-    backgroundColor: "white",
+    backgroundColor: "black",
     autoHideMenuBar: true,
+    resizable: false,
+    alwaysOnTop: true,
   });
 
   // and load the about.html of the app.
