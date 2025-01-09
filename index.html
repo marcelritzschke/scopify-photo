@@ -3,9 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ScopifyPhoto</title>
+    <link rel="icon" type="image/x-icon" href="public/favicon.ico" />
     <link rel="stylesheet" href="css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/bootstrap-icons.min.css" />
+    <title>ScopifyPhoto</title>
     <style>
       body {
         background-color: #f8f9fa;
@@ -18,10 +19,6 @@
           #374151
         ); /* Slate gradient */
         text-align: center;
-      }
-      .hero h1,
-      .hero p {
-        color: #f8f9fa;
       }
       .hero .btn {
         margin: 0.5rem;
@@ -41,11 +38,9 @@
         color: #000000;
       }
       .app-icon {
-        width: 75px; /* Adjust size as needed */
-        height: auto; /* Maintain aspect ratio */
-        filter: drop-shadow(
-          0 4px 6px rgba(0, 0, 0, 0.4)
-        ); /* Add a subtle shadow for depth */
+        width: 75px;
+        height: 75px;
+        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
       }
     </style>
   </head>
@@ -53,13 +48,15 @@
     <!-- Hero Section -->
     <div class="hero px-1 pb-5 pt-4 text-center text-white">
       <!-- App Icon -->
-      <!-- <img
-        src="assets/appicon.png"
-        alt="ScopifyPhoto Icon"
-        class="app-icon d-block mx-auto mb-2"
-      /> -->
-      <h1 class="display-1">ScopifyPhoto</h1>
-      <p class="lead">
+      <div class="d-flex align-items-center justify-content-center mb-1">
+        <img
+          src="public/sp_appicon.png"
+          alt="ScopifyPhoto Icon"
+          class="app-icon"
+        />
+        <p class="ms-3 display-2">ScopifyPhoto</p>
+      </div>
+      <p class="lead mb-5">
         Bringing video editing techniques to photo analysis and editing.
       </p>
 
@@ -70,7 +67,7 @@
 
       <!-- GitHub Link -->
       <a
-        href="https://github.com/marcelritzschke/scopify-photo"
+        href="https://github.com/marcelritzschke/scopifyphoto"
         class="btn btn-outline-light btn-lg"
         target="_blank"
       >
