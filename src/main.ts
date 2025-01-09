@@ -143,10 +143,10 @@ const createWindow = () => {
   mainWindow = new BrowserWindow({
     title: "ScopifyPhoto",
     frame: false,
-    width: isDev ? 550 : 300,
+    width: isDev ? 712 : 512,
     minWidth: 276,
     minHeight: 276,
-    height: 330,
+    height: 512,
     backgroundColor: "black",
     alwaysOnTop: appPreferences.alwaysOnTop,
     webPreferences: {

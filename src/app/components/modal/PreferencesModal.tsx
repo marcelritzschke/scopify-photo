@@ -50,7 +50,7 @@ const PreferencesModal: React.FC<PreferencesModalProps> = () => {
         <div className="flex min-h-full items-center justify-center p-4">
           <DialogPanel
             transition
-            className="data-[closed]:transform-[scale(95%)] w-full max-w-md rounded-xl bg-white/5 py-2 backdrop-blur-2xl duration-300 ease-out data-[closed]:opacity-0"
+            className="data-[closed]:transform-[scale(95%)] max-h-[512px] w-full max-w-md flex-col rounded-xl bg-white/10 py-2 backdrop-blur-2xl duration-300 ease-out data-[closed]:opacity-0"
           >
             <DialogTitle
               as="h3"
