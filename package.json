@@ -1,6 +1,6 @@
 {
-  "name": "scopify-photo",
-  "productName": "scopify-photo",
+  "name": "scopifyphoto",
+  "productName": "scopifyphoto",
   "version": "0.0.1",
   "description": "My Electron application description",
   "main": ".vite/build/main.js",
